@@ -1,0 +1,6 @@
+[package]
+name = "supply-chain"
+version = "0.1.0"
+authors = ["Alex <rupta3@gmail.com>"]
+
+[dependencies]
