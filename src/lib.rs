@@ -1,7 +1,6 @@
 extern crate serde;
 #[macro_use]
 extern crate serde_derive;
-#[macro_use]
 extern crate log;
 #[cfg(test)]
 extern crate tempdir;
@@ -20,4 +19,4 @@ pub mod service;
 pub mod schema;
 pub mod api;
 
-pub const SUPPLY_CHAIN_SERVICE_ID: u16 = 128;
+pub const SUPPLY_CHAIN_SERVICE_ID: u16 = 1;

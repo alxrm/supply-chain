@@ -1,7 +1,7 @@
 use exonum::crypto::PublicKey;
 use exonum::blockchain::Transaction;
 
-use exonum::messages::{RawMessage, RawTransaction, FromRaw, Message};
+use exonum::messages::{RawMessage, FromRaw, Message};
 use exonum::storage::Fork;
 use exonum::encoding::Error as StreamStructError;
 

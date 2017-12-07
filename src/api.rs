@@ -1,21 +1,18 @@
-use serde::Serialize;
 use router::Router;
 use iron::prelude::*;
 use bodyparser;
 
-use std::fmt;
 use std::collections::HashMap;
 
 use exonum::api::{Api, ApiError};
 use exonum::node::TransactionSend;
 use exonum::messages::Message;
 use exonum::crypto::{HexValue, PublicKey, Hash};
-use exonum::storage::{Fork, MapProof, ListProof, MapIndex};
-use exonum::blockchain::{self, Blockchain, BlockProof};
-use exonum::helpers::Height;
+use exonum::storage::{Fork, MapIndex};
+use exonum::blockchain::Blockchain;
 use exonum::encoding::serialize::json::reexport as serde_json;
 
-use self::serde_json::{Value, to_value};
+use self::serde_json::to_value;
 
 use super::transactions::BaseTransaction;
 use super::owner::Owner;
@@ -84,30 +81,60 @@ impl<T> SupplyChainApi<T> where T: TransactionSend + Clone {
 }
 
 impl<T> ApiHandler<T> where T: 'static + TransactionSend + Clone {
-    fn new(api: SupplyChainApi<T>) -> ApiHandler<T> {
+    fn new(api: SupplyChainApi<T>) -> Self {
         ApiHandler {
             api
         }
     }
 
     fn handle_owner(&self, req: &mut Request) -> IronResult<Response> {
-        unimplemented!()
+        let path = req.url.path();
+        let owner_key = path.last().unwrap();
+        let public_key = PublicKey::from_hex(owner_key).map_err(ApiError::FromHex)?;
+        let api = &self.api;
+
+        match api.owner(&public_key) {
+            Ok(own) => api.ok_response(&serde_json::to_value(own).unwrap()),
+            Err(_) => {
+                api.not_found_response(&serde_json::to_value("Owner not found").unwrap())
+            }
+        }
     }
 
     fn handle_item(&self, req: &mut Request) -> IronResult<Response> {
-        unimplemented!()
+        let path = req.url.path();
+        let item_uid = path.last().unwrap().to_string();
+        let api = &self.api;
+
+        match api.item(&item_uid) {
+            Ok(item) => api.ok_response(&serde_json::to_value(item).unwrap()),
+            Err(_) => {
+                api.not_found_response(&serde_json::to_value("Item not found").unwrap())
+            }
+        }
     }
 
     fn handle_group(&self, req: &mut Request) -> IronResult<Response> {
-        unimplemented!()
+        let path = req.url.path();
+        let group_id = path.last().unwrap().to_string();
+        let api = &self.api;
+
+        match api.group(&group_id) {
+            Ok(items) => api.ok_response(&serde_json::to_value(items).unwrap()),
+            Err(_) => {
+                api.not_found_response(&serde_json::to_value("Group not found").unwrap())
+            }
+        }
     }
 
     fn handle_post_transaction(&self, req: &mut Request) -> IronResult<Response> {
+        let api = &self.api;
+
         match req.get::<bodyparser::Struct<BaseTransaction>>() {
             Ok(Some(transaction)) => {
-                let tx_hash = self.api.post_transaction(transaction)?;
+                let tx_hash = api.post_transaction(transaction)?;
                 let json = TxResponse { tx_hash };
-                self.api.ok_response(&to_value(&json).unwrap())
+                api.ok_response(&to_value(&json).unwrap())
             }
             Ok(None) => Err(ApiError::IncorrectRequest("Empty request body".into()))?,
             Err(e) => Err(ApiError::IncorrectRequest(Box::new(e)))?,
@@ -134,7 +161,7 @@ impl<T> Api for SupplyChainApi<T> where T: 'static + TransactionSend + Clone {
 
         router.post(&"/v1/transaction", transaction_route, "transaction");
         router.get(&"/v1/item/:uid", item_route, "item");
-        router.get(&"/v1/group/:groupid", group_route, "group");
-        router.get(&"/v1/owner/:pubkey", owner_route, "owner");
+        router.get(&"/v1/group/:groupId", group_route, "group");
+        router.get(&"/v1/owner/:pubKey", owner_route, "owner");
     }
 }
