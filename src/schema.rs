@@ -30,10 +30,7 @@ impl<T> fmt::Debug for SupplyChainSchema<T> {
 }
 
 /// read access schema
-impl<T> SupplyChainSchema<T>
-    where
-        T: AsRef<Snapshot>,
-{
+impl<T> SupplyChainSchema<T> where T: AsRef<Snapshot> {
     pub fn new(view: T) -> Self {
         SupplyChainSchema { view }
     }

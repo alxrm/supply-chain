@@ -1,19 +1,19 @@
-use exonum::encoding::Field;
 use exonum::crypto::PublicKey;
 use exonum::blockchain::Transaction;
 
 use exonum::messages::{RawMessage, RawTransaction, FromRaw, Message};
-use exonum::storage::{Snapshot, Fork};
+use exonum::storage::Fork;
+use exonum::encoding::Error as StreamStructError;
 
 use super::schema::SupplyChainSchema;
 use super::SUPPLY_CHAIN_SERVICE_ID;
 use super::item::Item;
 use super::owner::Owner;
 
-pub const TX_ADD_ITEM_ID: u16 = 128;
-pub const TX_ATTACH_TO_GROUP_ID: u16 = 129;
-pub const TX_CHANGE_GROUP_OWNER_ID: u16 = 130;
-pub const TX_CREATE_OWNER_ID: u16 = 131;
+pub const TX_CREATE_OWNER_ID: u16 = 128;
+pub const TX_ADD_ITEM_ID: u16 = 129;
+pub const TX_ATTACH_TO_GROUP_ID: u16 = 130;
+pub const TX_CHANGE_GROUP_OWNER_ID: u16 = 131;
 
 message! {
     struct TxCreateOwner {
@@ -65,12 +65,112 @@ message! {
     }
 }
 
-impl Transaction for TxCreateOwner {
-    fn verify(&self) -> bool {
-        let is_valid_name = self.name() != "";
-        let is_valid_signature = self.verify_signature(self.pub_key());
+/// Transaction types.
+#[serde(untagged)]
+#[derive(PartialEq, Debug, Clone, Serialize, Deserialize)]
+pub enum BaseTransaction {
+    CreateOwner(TxCreateOwner),
 
-        is_valid_signature && is_valid_name
+    AddItem(TxAddItem),
+
+    AttachToGroup(TxAttachToGroup),
+
+    ChangeGroupOwner(TxChangeGroupOwner),
+}
+
+impl BaseTransaction {
+    /// Returns public key from the transaction.
+    pub fn pub_key(&self) -> &PublicKey {
+        match *self {
+            BaseTransaction::CreateOwner(ref msg) => msg.pub_key(),
+            BaseTransaction::AddItem(ref msg) => msg.owner(),
+            BaseTransaction::AttachToGroup(ref msg) => msg.owner(),
+            BaseTransaction::ChangeGroupOwner(ref msg) => msg.next_owner(),
+        }
+    }
+}
+
+impl Message for BaseTransaction {
+    fn raw(&self) -> &RawMessage {
+        match *self {
+            BaseTransaction::CreateOwner(ref msg) => msg.raw(),
+            BaseTransaction::AddItem(ref msg) => msg.raw(),
+            BaseTransaction::AttachToGroup(ref msg) => msg.raw(),
+            BaseTransaction::ChangeGroupOwner(ref msg) => msg.raw(),
+        }
+    }
+}
+
+impl FromRaw for BaseTransaction {
+    fn from_raw(raw: RawMessage) -> Result<Self, StreamStructError> {
+        match raw.message_type() {
+            TX_CREATE_OWNER_ID => Ok(BaseTransaction::CreateOwner(TxCreateOwner::from_raw(raw)?)),
+            TX_ADD_ITEM_ID => Ok(BaseTransaction::AddItem(TxAddItem::from_raw(raw)?)),
+            TX_ATTACH_TO_GROUP_ID => Ok(BaseTransaction::AttachToGroup(TxAttachToGroup::from_raw(raw)?)),
+            TX_CHANGE_GROUP_OWNER_ID => Ok(BaseTransaction::ChangeGroupOwner(TxChangeGroupOwner::from_raw(raw)?)),
+            _ => Err(StreamStructError::IncorrectMessageType {
+                message_type: raw.message_type(),
+            }),
+        }
+    }
+}
+
+impl From<TxCreateOwner> for BaseTransaction {
+    fn from(tx: TxCreateOwner) -> BaseTransaction {
+        BaseTransaction::CreateOwner(tx)
+    }
+}
+
+impl From<TxAddItem> for BaseTransaction {
+    fn from(tx: TxAddItem) -> BaseTransaction {
+        BaseTransaction::AddItem(tx)
+    }
+}
+
+impl From<TxAttachToGroup> for BaseTransaction {
+    fn from(tx: TxAttachToGroup) -> BaseTransaction {
+        BaseTransaction::AttachToGroup(tx)
+    }
+}
+
+impl From<TxChangeGroupOwner> for BaseTransaction {
+    fn from(tx: TxChangeGroupOwner) -> BaseTransaction {
+        BaseTransaction::ChangeGroupOwner(tx)
+    }
+}
+
+impl From<RawMessage> for BaseTransaction {
+    fn from(raw: RawMessage) -> Self {
+        BaseTransaction::from_raw(raw).unwrap()
+    }
+}
+
+impl Transaction for BaseTransaction {
+    fn verify(&self) -> bool {
+        let is_valid_signature = self.verify_signature(self.pub_key());
+        let is_valid_content = match *self {
+            BaseTransaction::CreateOwner(ref msg) => msg.verify(),
+            BaseTransaction::AddItem(ref msg) => msg.verify(),
+            BaseTransaction::AttachToGroup(ref msg) => msg.verify(),
+            BaseTransaction::ChangeGroupOwner(ref msg) => msg.verify(),
+        };
+
+        is_valid_signature && is_valid_content
+    }
+
+    fn execute(&self, view: &mut Fork) {
+        match *self {
+            BaseTransaction::CreateOwner(ref msg) => msg.execute(view),
+            BaseTransaction::AddItem(ref msg) => msg.execute(view),
+            BaseTransaction::AttachToGroup(ref msg) => msg.execute(view),
+            BaseTransaction::ChangeGroupOwner(ref msg) => msg.execute(view),
+        }
+    }
+}
+
+impl TxCreateOwner {
+    fn verify(&self) -> bool {
+        self.name() != ""
     }
 
     fn execute(&self, fork: &mut Fork) {
@@ -89,13 +189,12 @@ impl Transaction for TxCreateOwner {
     }
 }
 
-impl Transaction for TxAddItem {
+impl TxAddItem {
     fn verify(&self) -> bool {
         let is_valid_name = self.name() != "";
         let is_valid_uid = self.item_uid() != "";
-        let is_valid_signature = self.verify_signature(self.owner());
 
-        is_valid_signature && is_valid_name && is_valid_uid
+        is_valid_name && is_valid_uid
     }
 
     fn execute(&self, fork: &mut Fork) {
@@ -120,13 +219,12 @@ impl Transaction for TxAddItem {
     }
 }
 
-impl Transaction for TxAttachToGroup {
+impl TxAttachToGroup {
     fn verify(&self) -> bool {
         let is_valid_uid = self.item_uid() != "";
         let is_valid_group = self.group() != "";
-        let is_valid_signature = self.verify_signature(self.owner());
 
-        is_valid_uid && is_valid_group && is_valid_signature
+        is_valid_uid && is_valid_group
     }
 
     fn execute(&self, fork: &mut Fork) {
@@ -153,12 +251,9 @@ impl Transaction for TxAttachToGroup {
     }
 }
 
-impl Transaction for TxChangeGroupOwner {
+impl TxChangeGroupOwner {
     fn verify(&self) -> bool {
-        let is_valid_group = self.group() != "";
-        let is_valid_signature = self.verify_signature(self.next_owner());
-
-        is_valid_group && is_valid_signature
+        self.group() != ""
     }
 
     fn execute(&self, fork: &mut Fork) {

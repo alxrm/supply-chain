@@ -1,5 +1,5 @@
 use exonum::encoding::Field;
-use exonum::crypto::{PublicKey, Hash};
+use exonum::crypto::PublicKey;
 
 use super::owner::Owner;
 
@@ -35,9 +35,9 @@ impl Item {
         Field::write(&group_id, &mut self.raw, 48, 56);
         true
     }
-//
-//    pub fn grow_length_set_history_hash(&mut self, hash: &Hash) {
-//        Field::write(&hash, &mut self.raw, 64, 96);
-//        Field::write(&(self.history_len() + 1), &mut self.raw, 56, 64);
-//    }
+    //
+    //    pub fn grow_length_set_history_hash(&mut self, hash: &Hash) {
+    //        Field::write(&hash, &mut self.raw, 64, 96);
+    //        Field::write(&(self.history_len() + 1), &mut self.raw, 56, 64);
+    //    }
 }
