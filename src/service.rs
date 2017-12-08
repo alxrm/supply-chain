@@ -9,7 +9,8 @@ use exonum::api::Api;
 
 use super::transactions::BaseTransaction;
 use super::api::SupplyChainApi;
-use super::SUPPLY_CHAIN_SERVICE_ID;
+
+pub const SUPPLY_CHAIN_SERVICE_ID: u16 = 1337;
 
 #[derive(Default, Debug)]
 pub struct SupplyChainService {}

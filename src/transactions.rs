@@ -6,7 +6,7 @@ use exonum::storage::Fork;
 use exonum::encoding::Error as StreamStructError;
 
 use super::schema::SupplyChainSchema;
-use super::SUPPLY_CHAIN_SERVICE_ID;
+use super::service::SUPPLY_CHAIN_SERVICE_ID;
 use super::item::Item;
 use super::owner::Owner;
 
