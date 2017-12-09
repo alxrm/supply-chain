@@ -94,9 +94,9 @@ impl<T> ApiHandler<T> where T: 'static + TransactionSend + Clone {
         let api = &self.api;
 
         match api.owner(&public_key) {
-            Ok(own) => api.ok_response(&serde_json::to_value(own).unwrap()),
+            Ok(own) => api.ok_response(&to_value(own).unwrap()),
             Err(_) => {
-                api.not_found_response(&serde_json::to_value("Owner not found").unwrap())
+                api.not_found_response(&to_value("Owner not found").unwrap())
             }
         }
     }
@@ -107,9 +107,9 @@ impl<T> ApiHandler<T> where T: 'static + TransactionSend + Clone {
         let api = &self.api;
 
         match api.item(&item_uid) {
-            Ok(item) => api.ok_response(&serde_json::to_value(item).unwrap()),
+            Ok(item) => api.ok_response(&to_value(item).unwrap()),
             Err(_) => {
-                api.not_found_response(&serde_json::to_value("Item not found").unwrap())
+                api.not_found_response(&to_value("Item not found").unwrap())
             }
         }
     }
@@ -120,9 +120,9 @@ impl<T> ApiHandler<T> where T: 'static + TransactionSend + Clone {
         let api = &self.api;
 
         match api.group(&group_id) {
-            Ok(items) => api.ok_response(&serde_json::to_value(items).unwrap()),
+            Ok(items) => api.ok_response(&to_value(items).unwrap()),
             Err(_) => {
-                api.not_found_response(&serde_json::to_value("Group not found").unwrap())
+                api.not_found_response(&to_value("Group not found").unwrap())
             }
         }
     }
@@ -163,5 +163,7 @@ impl<T> Api for SupplyChainApi<T> where T: 'static + TransactionSend + Clone {
         router.get(&"/v1/item/:uid", item_route, "item");
         router.get(&"/v1/group/:groupId", group_route, "group");
         router.get(&"/v1/owner/:pubKey", owner_route, "owner");
+
+        println!("Wired API methods");
     }
 }

@@ -41,6 +41,9 @@ impl Service for SupplyChainService {
             blockchain: ctx.blockchain().clone(),
         };
         api.wire(&mut router);
+
+        println!("Wired the API, listening for requests:");
+
         Some(Box::new(router))
     }
 }
