@@ -37,6 +37,8 @@ struct TxResponse {
     tx_hash: Hash,
 }
 
+
+
 impl<T> SupplyChainApi<T> where T: TransactionSend + Clone {
     fn owner(&self, pub_key: &PublicKey) -> Result<Owner, ApiError> {
         let mut view = self.blockchain.fork();
@@ -108,7 +110,8 @@ impl<T> ApiHandler<T> where T: 'static + TransactionSend + Clone {
 
         match api.item(&item_uid) {
             Ok(item) => api.ok_response(&to_value(item).unwrap()),
-            Err(_) => {
+            Err(e) => {
+                error!("Error in handle_item: {}", e);
                 api.not_found_response(&to_value("Item not found").unwrap())
             }
         }
