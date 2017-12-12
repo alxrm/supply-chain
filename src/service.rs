@@ -42,8 +42,6 @@ impl Service for SupplyChainService {
         };
         api.wire(&mut router);
 
-        println!("Wired the API, listening for requests:");
-
         Some(Box::new(router))
     }
 }

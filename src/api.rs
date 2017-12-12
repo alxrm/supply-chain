@@ -37,8 +37,6 @@ struct TxResponse {
     tx_hash: Hash,
 }
 
-
-
 impl<T> SupplyChainApi<T> where T: TransactionSend + Clone {
     fn owner(&self, pub_key: &PublicKey) -> Result<Owner, ApiError> {
         let mut view = self.blockchain.fork();
@@ -167,6 +165,6 @@ impl<T> Api for SupplyChainApi<T> where T: 'static + TransactionSend + Clone {
         router.get(&"/v1/group/:groupId", group_route, "group");
         router.get(&"/v1/owner/:pubKey", owner_route, "owner");
 
-        println!("Wired API methods");
+        info!("Wired API methods");
     }
 }
