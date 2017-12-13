@@ -5,10 +5,13 @@ use exonum::messages::{RawTransaction, FromRaw};
 use exonum::blockchain::{Service, Transaction, ApiContext};
 use exonum::encoding::Error as StreamStructError;
 use exonum::helpers::fabric::{ServiceFactory, Context};
+use exonum::storage::Snapshot;
+use exonum::crypto::Hash;
 use exonum::api::Api;
 
 use super::transactions::BaseTransaction;
 use super::api::SupplyChainApi;
+use super::schema::SupplyChainSchema;
 
 pub const SUPPLY_CHAIN_SERVICE_ID: u16 = 1337;
 
@@ -32,6 +35,11 @@ impl Service for SupplyChainService {
 
     fn tx_from_raw(&self, raw: RawTransaction) -> Result<Box<Transaction>, StreamStructError> {
         BaseTransaction::from_raw(raw).map(|tx| Box::new(tx) as Box<Transaction>)
+    }
+
+    fn state_hash(&self, view: &Snapshot) -> Vec<Hash> {
+        let schema = SupplyChainSchema::new(view);
+        schema.state_hash()
     }
 
     fn public_api_handler(&self, ctx: &ApiContext) -> Option<Box<Handler>> {

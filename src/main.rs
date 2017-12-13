@@ -1,15 +1,19 @@
 extern crate exonum;
 extern crate exonum_configuration;
 extern crate supply_chain;
+extern crate uuid;
+
 //
 //#[macro_use]
 //extern crate log;
 
 use std::path::Path;
+use uuid::{Uuid, UuidVersion};
 
 use exonum::helpers;
 use exonum::helpers::fabric::NodeBuilder;
 use exonum::node::{Node, NodeConfig, NodeApiConfig};
+use exonum::crypto::{hash, Hash};
 use exonum::storage::{RocksDB, RocksDBOptions};
 use exonum_configuration::ConfigurationService;
 use exonum::blockchain::{Blockchain, Service, GenesisConfig, ValidatorKeys};
@@ -20,8 +24,8 @@ fn main() {
     exonum::crypto::init();
     helpers::init_logger().unwrap();
 
-        let node = NodeBuilder::new()
-            .with_service(Box::new(ConfigurationService::new()))
-            .with_service(Box::new(SupplyChainService::new()));
-        node.run();
+    let node = NodeBuilder::new()
+        .with_service(Box::new(ConfigurationService::new()))
+        .with_service(Box::new(SupplyChainService::new()));
+    node.run();
 }

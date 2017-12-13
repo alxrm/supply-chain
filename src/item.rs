@@ -1,5 +1,5 @@
 use exonum::encoding::Field;
-use exonum::crypto::PublicKey;
+use exonum::crypto::{PublicKey, Hash};
 
 use super::owner::Owner;
 

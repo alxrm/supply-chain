@@ -1,4 +1,5 @@
-use exonum::crypto::PublicKey;
+use exonum::crypto::{PublicKey, Hash};
+use exonum::encoding::Field;
 
 encoding_struct! {
     struct Owner {

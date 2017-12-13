@@ -1,6 +1,6 @@
 use std::fmt;
 
-use exonum::crypto::PublicKey;
+use exonum::crypto::{PublicKey, Hash};
 use exonum::storage::{Snapshot, Fork, ProofMapIndex, MapIndex};
 
 use super::item::Item;
@@ -45,6 +45,10 @@ impl<T> SupplyChainSchema<T> where T: AsRef<Snapshot> {
 
     pub fn group(&self, group_id: &String) -> MapIndex<&T, String, Item> {
         MapIndex::new(group_id, &self.view)
+    }
+
+    pub fn state_hash(&self) -> Vec<Hash> {
+        vec![self.owners().root_hash()]
     }
 }
 
