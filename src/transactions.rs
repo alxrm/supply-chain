@@ -1,6 +1,5 @@
-use exonum::crypto::PublicKey;
+use exonum::crypto::{PublicKey, Hash};
 use exonum::blockchain::Transaction;
-
 use exonum::messages::{RawMessage, FromRaw, Message};
 use exonum::storage::Fork;
 use exonum::encoding::Error as StreamStructError;
@@ -9,6 +8,7 @@ use super::schema::SupplyChainSchema;
 use super::service::SUPPLY_CHAIN_SERVICE_ID;
 use super::item::Item;
 use super::owner::Owner;
+use super::tx_metarecord::TxMetaRecord;
 
 pub const TX_CREATE_OWNER_ID: u16 = 128;
 pub const TX_ADD_ITEM_ID: u16 = 129;
@@ -159,11 +159,12 @@ impl Transaction for BaseTransaction {
     }
 
     fn execute(&self, view: &mut Fork) {
+        let tx_hash = Message::hash(self);
         match *self {
-            BaseTransaction::CreateOwner(ref msg) => msg.execute(view),
-            BaseTransaction::AddItem(ref msg) => msg.execute(view),
-            BaseTransaction::AttachToGroup(ref msg) => msg.execute(view),
-            BaseTransaction::ChangeGroupOwner(ref msg) => msg.execute(view),
+            BaseTransaction::CreateOwner(ref msg) => msg.execute(view, tx_hash),
+            BaseTransaction::AddItem(ref msg) => msg.execute(view, tx_hash),
+            BaseTransaction::AttachToGroup(ref msg) => msg.execute(view, tx_hash),
+            BaseTransaction::ChangeGroupOwner(ref msg) => msg.execute(view, tx_hash),
         }
     }
 }
@@ -173,16 +174,31 @@ impl TxCreateOwner {
         self.name() != ""
     }
 
-    fn execute(&self, fork: &mut Fork) {
+    fn execute(&self, fork: &mut Fork, tx_hash: Hash) {
         let mut schema = SupplyChainSchema::new(fork);
         let key = self.pub_key();
+        let owner = {
+            let found_owner = schema.owner(key);
+            let status = found_owner.is_none();
 
-        let owner = match schema.owner(key) {
-            Some(own) => own,
-            None => Owner::new(
-                key,
-                self.name()
-            )
+            let meta = TxMetaRecord::new(&tx_hash, status);
+            let mut history = schema.owner_history(self.pub_key());
+            history.push(meta);
+
+            match found_owner {
+                Some(mut own) => {
+                    own.grow_length_set_history_hash(&history.root_hash());
+                    own
+                }
+                None => {
+                    Owner::new(
+                        self.pub_key(),
+                        self.name(),
+                        1, // history_len
+                        &history.root_hash(),
+                    )
+                }
+            }
         };
 
         schema.owners_mut().put(key, owner)
@@ -197,25 +213,45 @@ impl TxAddItem {
         is_valid_name && is_valid_uid
     }
 
-    fn execute(&self, fork: &mut Fork) {
+    fn execute(&self, fork: &mut Fork, tx_hash: Hash) {
         let mut schema = SupplyChainSchema::new(fork);
         let item_uid = String::from(self.item_uid());
-
-        if schema.owner(self.owner()).is_none() {
-            return;
+        let found_item = schema.item(&item_uid);
+        let owner = match schema.owner(self.owner()) {
+            Some(own) => own,
+            None => {
+                return;
+            }
         };
 
-        let item = match schema.item(&item_uid) {
-            Some(it) => it,
-            None => Item::new(
-                self.owner(),
-                self.name(),
-                self.item_uid(),
-                ""
-            )
+        let transaction_meta = {
+            let status = found_item.is_none();
+
+            TxMetaRecord::new(&tx_hash, status)
         };
 
-        schema.items_mut().put(&item_uid, item)
+        let result_item = {
+            let mut item_history = schema.item_history(&item_uid);
+            item_history.push(transaction_meta.clone());
+
+            match found_item {
+                Some(mut it) => {
+                    it.grow_length_set_history_hash(&item_history.root_hash());
+                    it
+                }
+                None => Item::new(
+                    self.owner(),
+                    self.name(),
+                    self.item_uid(),
+                    "",
+                    1,
+                    &item_history.root_hash()
+                )
+            }
+        };
+
+        schema.append_owner_history(owner, self.owner(), transaction_meta);
+        schema.items_mut().put(&item_uid, result_item)
     }
 }
 
@@ -227,9 +263,15 @@ impl TxAttachToGroup {
         is_valid_uid && is_valid_group
     }
 
-    fn execute(&self, fork: &mut Fork) {
+    fn execute(&self, fork: &mut Fork, tx_hash: Hash) {
         let mut schema = SupplyChainSchema::new(fork);
         let item_uid = String::from(self.item_uid());
+        let owner = match schema.owner(self.owner()) {
+            Some(own) => own,
+            None => {
+                return;
+            }
+        };
 
         let mut item = match schema.item(&item_uid) {
             Some(it) => it,
@@ -245,7 +287,19 @@ impl TxAttachToGroup {
             schema.group_mut(&prev_group_id).remove(&item_uid);
         }
 
-        item.attach_to_group(next_group_id.as_str());
+        let transaction_meta = {
+            let status = item.attach_to_group(next_group_id.as_str());
+
+            TxMetaRecord::new(&tx_hash, status)
+        };
+
+        {
+            let mut history = schema.item_history(&item_uid);
+            history.push(transaction_meta.clone());
+            item.grow_length_set_history_hash(&history.root_hash());
+        }
+
+        schema.append_owner_history(owner, self.owner(), transaction_meta);
         schema.group_mut(&next_group_id).put(&item_uid, item.clone());
         schema.items_mut().put(&item_uid, item);
     }
@@ -256,7 +310,7 @@ impl TxChangeGroupOwner {
         self.group() != ""
     }
 
-    fn execute(&self, fork: &mut Fork) {
+    fn execute(&self, fork: &mut Fork, tx_hash: Hash) {
         let mut schema = SupplyChainSchema::new(fork);
         let group_id = String::from(self.group());
 

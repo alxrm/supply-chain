@@ -7,16 +7,9 @@ extern crate uuid;
 //#[macro_use]
 //extern crate log;
 
-use std::path::Path;
-use uuid::{Uuid, UuidVersion};
-
 use exonum::helpers;
 use exonum::helpers::fabric::NodeBuilder;
-use exonum::node::{Node, NodeConfig, NodeApiConfig};
-use exonum::crypto::{hash, Hash};
-use exonum::storage::{RocksDB, RocksDBOptions};
 use exonum_configuration::ConfigurationService;
-use exonum::blockchain::{Blockchain, Service, GenesisConfig, ValidatorKeys};
 
 use supply_chain::service::SupplyChainService;
 
