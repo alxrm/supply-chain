@@ -177,11 +177,11 @@ impl TxCreateOwner {
     fn execute(&self, fork: &mut Fork, tx_hash: Hash) {
         let mut schema = SupplyChainSchema::new(fork);
         let key = self.pub_key();
-        let owner = {
-            let found_owner = schema.owner(key);
-            let status = found_owner.is_none();
+        let found_owner = schema.owner(key);
+        let status = found_owner.is_none();
+        let meta = TxMetaRecord::new(&tx_hash, status);
 
-            let meta = TxMetaRecord::new(&tx_hash, status);
+        let owner = {
             let mut history = schema.owner_history(self.pub_key());
             history.push(meta);
 
@@ -216,7 +216,7 @@ impl TxAddItem {
     fn execute(&self, fork: &mut Fork, tx_hash: Hash) {
         let mut schema = SupplyChainSchema::new(fork);
         let item_uid = String::from(self.item_uid());
-        let found_item = schema.item(&item_uid);
+
         let mut owner = match schema.owner(self.owner()) {
             Some(own) => own,
             None => {
@@ -224,11 +224,9 @@ impl TxAddItem {
             }
         };
 
-        let transaction_meta = {
-            let status = found_item.is_none();
-
-            TxMetaRecord::new(&tx_hash, status)
-        };
+        let found_item = schema.item(&item_uid);
+        let status = found_item.is_none();
+        let transaction_meta = TxMetaRecord::new(&tx_hash, status);
 
         let result_item = {
             let mut item_history = schema.item_history(&item_uid);
@@ -267,6 +265,7 @@ impl TxAttachToGroup {
     fn execute(&self, fork: &mut Fork, tx_hash: Hash) {
         let mut schema = SupplyChainSchema::new(fork);
         let item_uid = String::from(self.item_uid());
+
         let mut owner = match schema.owner(self.owner()) {
             Some(own) => own,
             None => {
@@ -288,11 +287,8 @@ impl TxAttachToGroup {
             schema.group_mut(&prev_group_id).remove(&item_uid);
         }
 
-        let transaction_meta = {
-            let status = item.attach_to_group(next_group_id.as_str());
-
-            TxMetaRecord::new(&tx_hash, status)
-        };
+        let status = item.attach_to_group(next_group_id.as_str());
+        let transaction_meta = TxMetaRecord::new(&tx_hash, status);
 
         schema.append_owner_history(&mut owner, &transaction_meta);
         schema.owners_mut().put(self.owner(), owner);
@@ -336,6 +332,7 @@ impl TxChangeGroupOwner {
 
         schema.update_group(&group_items, &group_id);
         schema.update_items(&group_items);
+
         schema.append_owner_history(&mut next_owner, &success_record);
         schema.owners_mut().put(self.next_owner(), next_owner);
     }
