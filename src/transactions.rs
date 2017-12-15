@@ -178,6 +178,7 @@ impl TxCreateOwner {
         let mut schema = SupplyChainSchema::new(fork);
         let key = self.pub_key();
         let found_owner = schema.owner(key);
+
         let status = found_owner.is_none();
         let meta = TxMetaRecord::new(&tx_hash, status);
 
@@ -215,7 +216,7 @@ impl TxAddItem {
 
     fn execute(&self, fork: &mut Fork, tx_hash: Hash) {
         let mut schema = SupplyChainSchema::new(fork);
-        let item_uid = String::from(self.item_uid());
+        let item_uid = self.item_uid().to_string();
 
         let mut owner = match schema.owner(self.owner()) {
             Some(own) => own,

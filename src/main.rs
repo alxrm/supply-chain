@@ -3,10 +3,6 @@ extern crate exonum_configuration;
 extern crate supply_chain;
 extern crate uuid;
 
-//
-//#[macro_use]
-//extern crate log;
-
 use exonum::helpers;
 use exonum::helpers::fabric::NodeBuilder;
 use exonum_configuration::ConfigurationService;
@@ -20,5 +16,8 @@ fn main() {
     let node = NodeBuilder::new()
         .with_service(Box::new(ConfigurationService::new()))
         .with_service(Box::new(SupplyChainService::new()));
+
+    println!("Starting the blockchain");
+
     node.run();
 }
