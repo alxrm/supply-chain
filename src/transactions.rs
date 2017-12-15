@@ -217,7 +217,7 @@ impl TxAddItem {
         let mut schema = SupplyChainSchema::new(fork);
         let item_uid = String::from(self.item_uid());
         let found_item = schema.item(&item_uid);
-        let owner = match schema.owner(self.owner()) {
+        let mut owner = match schema.owner(self.owner()) {
             Some(own) => own,
             None => {
                 return;
@@ -250,7 +250,8 @@ impl TxAddItem {
             }
         };
 
-        schema.append_owner_history(owner, self.owner(), transaction_meta);
+        schema.append_owner_history(&mut owner, &transaction_meta);
+        schema.owners_mut().put(self.owner(), owner);
         schema.items_mut().put(&item_uid, result_item)
     }
 }
@@ -266,7 +267,7 @@ impl TxAttachToGroup {
     fn execute(&self, fork: &mut Fork, tx_hash: Hash) {
         let mut schema = SupplyChainSchema::new(fork);
         let item_uid = String::from(self.item_uid());
-        let owner = match schema.owner(self.owner()) {
+        let mut owner = match schema.owner(self.owner()) {
             Some(own) => own,
             None => {
                 return;
@@ -293,13 +294,10 @@ impl TxAttachToGroup {
             TxMetaRecord::new(&tx_hash, status)
         };
 
-        {
-            let mut history = schema.item_history(&item_uid);
-            history.push(transaction_meta.clone());
-            item.grow_length_set_history_hash(&history.root_hash());
-        }
+        schema.append_owner_history(&mut owner, &transaction_meta);
+        schema.owners_mut().put(self.owner(), owner);
 
-        schema.append_owner_history(owner, self.owner(), transaction_meta);
+        schema.append_item_history(&mut item, &transaction_meta);
         schema.group_mut(&next_group_id).put(&item_uid, item.clone());
         schema.items_mut().put(&item_uid, item);
     }
@@ -312,35 +310,33 @@ impl TxChangeGroupOwner {
 
     fn execute(&self, fork: &mut Fork, tx_hash: Hash) {
         let mut schema = SupplyChainSchema::new(fork);
-        let group_id = String::from(self.group());
+        let group_id = self.group().to_string();
+        let success_record = TxMetaRecord::new(&tx_hash, true);
 
-        let next_owner = match schema.owner(self.next_owner()) {
+        let mut next_owner = match schema.owner(self.next_owner()) {
             Some(own) => own,
             None => {
                 return;
             }
         };
 
-        let updated_group = {
-            let mut group = schema.group_mut(&group_id);
-            let items = group.values()
-                .map(|mut it| {
-                    it.change_owner(&next_owner);
-                    it
-                })
-                .collect::<Vec<Item>>();
-
-            for item in &items {
-                group.put(&String::from(item.uid()), item.clone());
-            }
+        let mut group_items = {
+            let group = schema.group(&group_id);
+            let items = group.values().collect::<Vec<Item>>();
 
             items
         };
 
-        let mut all = schema.items_mut();
+        for item in &mut group_items {
+            let status = item.change_owner(&next_owner);
+            let meta = TxMetaRecord::new(&tx_hash, status);
 
-        for item in &updated_group {
-            all.put(&String::from(item.uid()), item.clone());
+            schema.append_item_history(item, &meta);
         }
+
+        schema.update_group(&group_items, &group_id);
+        schema.update_items(&group_items);
+        schema.append_owner_history(&mut next_owner, &success_record);
+        schema.owners_mut().put(self.next_owner(), next_owner);
     }
 }

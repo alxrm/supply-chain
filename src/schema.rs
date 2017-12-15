@@ -75,18 +75,25 @@ impl<'a> SupplyChainSchema<&'a mut Fork> {
         self.items_mut().get(item_uid)
     }
 
+    pub fn update_group(&mut self, items: &Vec<Item>, group_id: &String) {
+        let mut group = self.group_mut(group_id);
+
+        items.iter().for_each(|it| {
+            group.put(&it.uid().to_string(), it.clone());
+        });
+    }
+
+    pub fn update_items(&mut self, items: &Vec<Item>) {
+        let mut items_map = self.items_mut();
+
+        items.iter().for_each(|it| {
+            items_map.put(&it.uid().to_string(), it.clone())
+        });
+    }
+
     pub fn item_history(&mut self, item_uid: &String)
                         -> ProofListIndex<&mut Fork, TxMetaRecord> {
         ProofListIndex::new(item_uid, self.view)
-    }
-
-    pub fn append_item_history(&mut self, mut item: Item, item_uid: &String, meta: TxMetaRecord) {
-        {
-            let mut history = self.item_history(item_uid);
-            history.push(meta);
-            item.grow_length_set_history_hash(&history.root_hash());
-        }
-        self.items_mut().put(item_uid, item)
     }
 
     pub fn owner_history(&mut self, owner_key: &PublicKey)
@@ -94,13 +101,16 @@ impl<'a> SupplyChainSchema<&'a mut Fork> {
         ProofListIndex::new(&owner_key.to_string(), self.view)
     }
 
-    pub fn append_owner_history(&mut self, mut owner: Owner, owner_key: &PublicKey,
-                                meta: TxMetaRecord) {
-        {
-            let mut history = self.owner_history(owner_key);
-            history.push(meta);
-            owner.grow_length_set_history_hash(&history.root_hash());
-        }
-        self.owners_mut().put(owner_key, owner)
+    pub fn append_owner_history(&mut self, owner: &mut Owner, meta: &TxMetaRecord) {
+        let mut history = self.owner_history(owner.pub_key());
+        history.push(meta.clone());
+        owner.grow_length_set_history_hash(&history.root_hash());
+    }
+
+    pub fn append_item_history(&mut self, item: &mut Item, meta: &TxMetaRecord) {
+        let item_uid = item.uid().to_string();
+        let mut history = self.item_history(&item_uid);
+        history.push(meta.clone());
+        item.grow_length_set_history_hash(&history.root_hash());
     }
 }
