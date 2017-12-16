@@ -64,8 +64,6 @@ impl<T> SupplyChainApi<T> where T: TransactionSend + Clone {
         let max_height = Height(general_schema.block_hashes_by_height().len()).previous();
         let block_proof = general_schema.block_and_precommits(max_height).unwrap();
 
-        println!("I'm walking here");
-
         let owner = match schema.owner(pub_key) {
             Some(own) => own,
             None => {
@@ -73,7 +71,6 @@ impl<T> SupplyChainApi<T> where T: TransactionSend + Clone {
             }
         };
 
-        println!("I'm walking here again");
         let history_raw = schema.owner_history(pub_key);
         let owner_history = self.collect_history(history_raw, &general_schema);
 
@@ -109,7 +106,7 @@ impl<T> SupplyChainApi<T> where T: TransactionSend + Clone {
         let res = AuditedEntityInfo {
             block_info: block_proof,
             data: item,
-            history: item_history
+            history: it
         };
 
         Ok(res)
