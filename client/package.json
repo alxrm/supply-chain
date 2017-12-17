@@ -1,11 +1,13 @@
 {
   "name": "supply-chain-client",
   "version": "0.0.1",
+  "private": true,
   "dependencies": {
     "md5": "latest",
     "mongoose": "latest",
     "moment": "latest",
     "big-integer": "^1.6.17",
+    "superagent": "latest",
     "exonum-client": "0.3.0"
   },
   "scripts": {
