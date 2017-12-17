@@ -1,0 +1,14 @@
+{
+  "name": "supply-chain-client",
+  "version": "0.0.1",
+  "dependencies": {
+    "md5": "latest",
+    "mongoose": "latest",
+    "moment": "latest",
+    "big-integer": "^1.6.17",
+    "exonum-client": "0.3.0"
+  },
+  "scripts": {
+    "start": "node ./sandbox.js"
+  }
+}
