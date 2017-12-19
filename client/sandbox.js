@@ -1,20 +1,6 @@
 const Exonum = require('exonum-client');
 const request = require('superagent');
-
-const TX_CREATE_OWNER_ID = 128;
-
-const TxCreateOwner = Exonum.newMessage({
-  size: 48,
-  network_id: 1,
-  protocol_version: 1,
-  service_id: 1337,
-  message_id: TX_CREATE_OWNER_ID,
-  fields: {
-    pub_key: { type: Exonum.PublicKey, size: 32, from: 0, to: 32 },
-    name: { type: Exonum.String, size: 8, from: 32, to: 40 },
-    seed: { type: Exonum.Uint64, size: 8, from: 40, to: 48 }
-  }
-});
+const { TxCreateOwner } = require('./constants/transactions');
 
 const userParams = {
   publicKey: '54c521565c72a643dad8a58723842b11c87cf60e4833487e8ec62720698b5d5a',

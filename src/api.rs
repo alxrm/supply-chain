@@ -106,7 +106,7 @@ impl<T> SupplyChainApi<T> where T: TransactionSend + Clone {
         let res = AuditedEntityInfo {
             block_info: block_proof,
             data: item,
-            history: it
+            history: item_history
         };
 
         Ok(res)
