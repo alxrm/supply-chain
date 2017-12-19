@@ -5,7 +5,7 @@ const TX_ADD_ITEM_ID = 129;
 const TX_ATTACH_TO_GROUP_ID = 130;
 const TX_CHANGE_GROUP_OWNER_ID = 131;
 
-const SERVICE_ID = 0;
+const SERVICE_ID = 1337;
 
 const TxCreateOwner = Exonum.newMessage({
   size: 48,
@@ -26,7 +26,12 @@ const TxAddItem = Exonum.newMessage({
   protocol_version: 1,
   service_id: SERVICE_ID,
   message_id: TX_ADD_ITEM_ID,
-  fields: {}
+  fields: {
+    owner: { type: Exonum.PublicKey, size: 32, from: 0, to: 32 },
+    item_uid: { type: Exonum.String, size: 8, from: 32, to: 40 },
+    name: { type: Exonum.String, size: 8, from: 40, to: 48 },
+    seed: { type: Exonum.Uint64, size: 8, from: 48, to: 56 }
+  }
 });
 
 const TxAttachToGroup = Exonum.newMessage({
@@ -56,10 +61,6 @@ const TxChangeGroupOwner = Exonum.newMessage({
   }
 });
 
-
 module.exports = {
-  TxCreateOwner,
-  TxAddItem,
-  TxAttachToGroup,
-  TxChangeGroupOwner
+  TxCreateOwner, TxAddItem, TxAttachToGroup, TxChangeGroupOwner
 };
