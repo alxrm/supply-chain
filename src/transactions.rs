@@ -13,7 +13,8 @@ use super::tx_metarecord::TxMetaRecord;
 pub const TX_CREATE_OWNER_ID: u16 = 128;
 pub const TX_ADD_ITEM_ID: u16 = 129;
 pub const TX_ATTACH_TO_GROUP_ID: u16 = 130;
-pub const TX_CHANGE_GROUP_OWNER_ID: u16 = 131;
+pub const TX_SEND_GROUP_ID: u16 = 131;
+pub const TX_RECEIVE_GROUP_ID: u16 = 132;
 
 message! {
     struct TxCreateOwner {
@@ -54,9 +55,21 @@ message! {
 }
 
 message! {
-    struct TxChangeGroupOwner {
+    struct TxSendGroup {
         const TYPE = SUPPLY_CHAIN_SERVICE_ID;
-        const ID = TX_CHANGE_GROUP_OWNER_ID;
+        const ID = TX_SEND_GROUP_ID;
+        const SIZE = 48;
+
+        field prev_owner:      &PublicKey  [00 => 32]
+        field group:           &str        [32 => 40]
+        field seed:            u64         [40 => 48]
+    }
+}
+
+message! {
+    struct TxReceiveGroup {
+        const TYPE = SUPPLY_CHAIN_SERVICE_ID;
+        const ID = TX_RECEIVE_GROUP_ID;
         const SIZE = 48;
 
         field next_owner:      &PublicKey  [00 => 32]
@@ -75,7 +88,9 @@ pub enum BaseTransaction {
 
     AttachToGroup(TxAttachToGroup),
 
-    ChangeGroupOwner(TxChangeGroupOwner),
+    SendGroup(TxSendGroup),
+
+    ReceiveGroup(TxReceiveGroup),
 }
 
 impl BaseTransaction {
@@ -85,7 +100,8 @@ impl BaseTransaction {
             BaseTransaction::CreateOwner(ref msg) => msg.pub_key(),
             BaseTransaction::AddItem(ref msg) => msg.owner(),
             BaseTransaction::AttachToGroup(ref msg) => msg.owner(),
-            BaseTransaction::ChangeGroupOwner(ref msg) => msg.next_owner(),
+            BaseTransaction::SendGroup(ref msg) => msg.prev_owner(),
+            BaseTransaction::ReceiveGroup(ref msg) => msg.next_owner(),
         }
     }
 }
@@ -96,7 +112,8 @@ impl Message for BaseTransaction {
             BaseTransaction::CreateOwner(ref msg) => msg.raw(),
             BaseTransaction::AddItem(ref msg) => msg.raw(),
             BaseTransaction::AttachToGroup(ref msg) => msg.raw(),
-            BaseTransaction::ChangeGroupOwner(ref msg) => msg.raw(),
+            BaseTransaction::SendGroup(ref msg) => msg.raw(),
+            BaseTransaction::ReceiveGroup(ref msg) => msg.raw(),
         }
     }
 }
@@ -107,7 +124,8 @@ impl FromRaw for BaseTransaction {
             TX_CREATE_OWNER_ID => Ok(BaseTransaction::CreateOwner(TxCreateOwner::from_raw(raw)?)),
             TX_ADD_ITEM_ID => Ok(BaseTransaction::AddItem(TxAddItem::from_raw(raw)?)),
             TX_ATTACH_TO_GROUP_ID => Ok(BaseTransaction::AttachToGroup(TxAttachToGroup::from_raw(raw)?)),
-            TX_CHANGE_GROUP_OWNER_ID => Ok(BaseTransaction::ChangeGroupOwner(TxChangeGroupOwner::from_raw(raw)?)),
+            TX_SEND_GROUP_ID => Ok(BaseTransaction::SendGroup(TxSendGroup::from_raw(raw)?)),
+            TX_RECEIVE_GROUP_ID => Ok(BaseTransaction::ReceiveGroup(TxReceiveGroup::from_raw(raw)?)),
             _ => Err(StreamStructError::IncorrectMessageType {
                 message_type: raw.message_type(),
             }),
@@ -133,9 +151,15 @@ impl From<TxAttachToGroup> for BaseTransaction {
     }
 }
 
-impl From<TxChangeGroupOwner> for BaseTransaction {
-    fn from(tx: TxChangeGroupOwner) -> BaseTransaction {
-        BaseTransaction::ChangeGroupOwner(tx)
+impl From<TxSendGroup> for BaseTransaction {
+    fn from(tx: TxSendGroup) -> BaseTransaction {
+        BaseTransaction::SendGroup(tx)
+    }
+}
+
+impl From<TxReceiveGroup> for BaseTransaction {
+    fn from(tx: TxReceiveGroup) -> BaseTransaction {
+        BaseTransaction::ReceiveGroup(tx)
     }
 }
 
@@ -152,7 +176,8 @@ impl Transaction for BaseTransaction {
             BaseTransaction::CreateOwner(ref msg) => msg.verify(),
             BaseTransaction::AddItem(ref msg) => msg.verify(),
             BaseTransaction::AttachToGroup(ref msg) => msg.verify(),
-            BaseTransaction::ChangeGroupOwner(ref msg) => msg.verify(),
+            BaseTransaction::SendGroup(ref msg) => msg.verify(),
+            BaseTransaction::ReceiveGroup(ref msg) => msg.verify(),
         };
 
         is_valid_signature && is_valid_content
@@ -164,7 +189,8 @@ impl Transaction for BaseTransaction {
             BaseTransaction::CreateOwner(ref msg) => msg.execute(view, tx_hash),
             BaseTransaction::AddItem(ref msg) => msg.execute(view, tx_hash),
             BaseTransaction::AttachToGroup(ref msg) => msg.execute(view, tx_hash),
-            BaseTransaction::ChangeGroupOwner(ref msg) => msg.execute(view, tx_hash),
+            BaseTransaction::SendGroup(ref msg) => msg.execute(view, tx_hash),
+            BaseTransaction::ReceiveGroup(ref msg) => msg.execute(view, tx_hash),
         }
     }
 }
@@ -300,7 +326,84 @@ impl TxAttachToGroup {
     }
 }
 
-impl TxChangeGroupOwner {
+//impl TxChangeGroupOwner {
+//    fn verify(&self) -> bool {
+//        self.group() != ""
+//    }
+//
+//    fn execute(&self, fork: &mut Fork, tx_hash: Hash) {
+//        let mut schema = SupplyChainSchema::new(fork);
+//        let group_id = self.group().to_string();
+//        let success_record = TxMetaRecord::new(&tx_hash, true);
+//
+//        let mut next_owner = match schema.owner(self.next_owner()) {
+//            Some(own) => own,
+//            None => {
+//                return;
+//            }
+//        };
+//
+//        let mut group_items = {
+//            let group = schema.group(&group_id);
+//            let items = group.values().collect::<Vec<Item>>();
+//
+//            items
+//        };
+//
+//        for item in &mut group_items {
+//            let status = item.change_owner(&next_owner);
+//            let meta = TxMetaRecord::new(&tx_hash, status);
+//
+//            schema.append_item_history(item, &meta);
+//        }
+//
+//        schema.update_group(&group_items, &group_id);
+//        schema.update_items(&group_items);
+//
+//        schema.append_owner_history(&mut next_owner, &success_record);
+//        schema.owners_mut().put(self.next_owner(), next_owner);
+//    }
+//}
+
+impl TxSendGroup {
+    fn verify(&self) -> bool {
+        self.group() != ""
+    }
+
+    fn execute(&self, fork: &mut Fork, tx_hash: Hash) {
+        let mut schema = SupplyChainSchema::new(fork);
+        let group_id = self.group().to_string();
+        let success_record = TxMetaRecord::new(&tx_hash, true);
+
+        let mut prev_owner = match schema.owner(self.prev_owner()) {
+            Some(own) => own,
+            None => {
+                return;
+            }
+        };
+
+
+
+        let mut items_grouped = {
+            let group = schema.group(&group_id);
+            let items = group.values().collect::<Vec<Item>>();
+
+            items
+        };
+
+        for item in &mut items_grouped {
+            schema.append_item_history(item, &success_record);
+        }
+
+        schema.update_group(&items_grouped, &group_id);
+        schema.update_items(&items_grouped);
+
+        schema.append_owner_history(&mut prev_owner, &success_record);
+        schema.owners_mut().put(self.prev_owner(), prev_owner);
+    }
+}
+
+impl TxReceiveGroup {
     fn verify(&self) -> bool {
         self.group() != ""
     }
@@ -317,22 +420,22 @@ impl TxChangeGroupOwner {
             }
         };
 
-        let mut group_items = {
+        let mut items_grouped = {
             let group = schema.group(&group_id);
             let items = group.values().collect::<Vec<Item>>();
 
             items
         };
 
-        for item in &mut group_items {
+        for item in &mut items_grouped {
             let status = item.change_owner(&next_owner);
             let meta = TxMetaRecord::new(&tx_hash, status);
 
             schema.append_item_history(item, &meta);
         }
 
-        schema.update_group(&group_items, &group_id);
-        schema.update_items(&group_items);
+        schema.update_group(&items_grouped, &group_id);
+        schema.update_items(&items_grouped);
 
         schema.append_owner_history(&mut next_owner, &success_record);
         schema.owners_mut().put(self.next_owner(), next_owner);
