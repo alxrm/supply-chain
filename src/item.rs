@@ -5,14 +5,15 @@ use super::owner::Owner;
 
 encoding_struct! {
     struct Item {
-        const SIZE = 96;
+        const SIZE = 97;
 
         field owner_key:              &PublicKey  [00 => 32]
         field name:                   &str        [32 => 40]
         field uid:                    &str        [40 => 48]
         field group_id:               &str        [48 => 56]
-        field history_len:            u64         [56 => 64]
-        field history_hash:           &Hash       [64 => 96]
+        field transferring:           bool        [56 => 57]
+        field history_len:            u64         [57 => 65]
+        field history_hash:           &Hash       [65 => 97]
     }
 }
 
@@ -36,8 +37,17 @@ impl Item {
         true
     }
 
+    pub fn set_transferring(&mut self, value: bool) -> bool {
+        if value == self.transferring() {
+            return false;
+        }
+
+        Field::write(&value, &mut self.raw, 56, 57);
+        true
+    }
+
     pub fn grow_length_set_history_hash(&mut self, hash: &Hash) {
-        Field::write(&hash, &mut self.raw, 64, 96);
-        Field::write(&(self.history_len() + 1), &mut self.raw, 56, 64);
+        Field::write(&hash, &mut self.raw, 65, 97);
+        Field::write(&(self.history_len() + 1), &mut self.raw, 57, 65);
     }
 }

@@ -269,6 +269,7 @@ impl TxAddItem {
                     self.name(),
                     self.item_uid(),
                     "",
+                    false,
                     1,
                     &item_history.root_hash()
                 )
@@ -326,45 +327,6 @@ impl TxAttachToGroup {
     }
 }
 
-//impl TxChangeGroupOwner {
-//    fn verify(&self) -> bool {
-//        self.group() != ""
-//    }
-//
-//    fn execute(&self, fork: &mut Fork, tx_hash: Hash) {
-//        let mut schema = SupplyChainSchema::new(fork);
-//        let group_id = self.group().to_string();
-//        let success_record = TxMetaRecord::new(&tx_hash, true);
-//
-//        let mut next_owner = match schema.owner(self.next_owner()) {
-//            Some(own) => own,
-//            None => {
-//                return;
-//            }
-//        };
-//
-//        let mut group_items = {
-//            let group = schema.group(&group_id);
-//            let items = group.values().collect::<Vec<Item>>();
-//
-//            items
-//        };
-//
-//        for item in &mut group_items {
-//            let status = item.change_owner(&next_owner);
-//            let meta = TxMetaRecord::new(&tx_hash, status);
-//
-//            schema.append_item_history(item, &meta);
-//        }
-//
-//        schema.update_group(&group_items, &group_id);
-//        schema.update_items(&group_items);
-//
-//        schema.append_owner_history(&mut next_owner, &success_record);
-//        schema.owners_mut().put(self.next_owner(), next_owner);
-//    }
-//}
-
 impl TxSendGroup {
     fn verify(&self) -> bool {
         self.group() != ""
@@ -382,8 +344,6 @@ impl TxSendGroup {
             }
         };
 
-
-
         let mut items_grouped = {
             let group = schema.group(&group_id);
             let items = group.values().collect::<Vec<Item>>();
@@ -392,7 +352,10 @@ impl TxSendGroup {
         };
 
         for item in &mut items_grouped {
-            schema.append_item_history(item, &success_record);
+            let status = item.set_transferring(true);
+            let meta = TxMetaRecord::new(&tx_hash, status);
+
+            schema.append_item_history(item, &meta);
         }
 
         schema.update_group(&items_grouped, &group_id);
@@ -428,7 +391,9 @@ impl TxReceiveGroup {
         };
 
         for item in &mut items_grouped {
-            let status = item.change_owner(&next_owner);
+            let finished_transfer = item.set_transferring(false);
+            let changed_owner = item.change_owner(&next_owner);
+            let status = finished_transfer && changed_owner;
             let meta = TxMetaRecord::new(&tx_hash, status);
 
             schema.append_item_history(item, &meta);
