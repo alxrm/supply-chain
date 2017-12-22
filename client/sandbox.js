@@ -17,15 +17,15 @@ const signature = TxCreateOwner.sign(userParams.secretKey, data);
 const url = 'http://127.0.0.1:8010/api/services/supply-chain/v1/transaction';
 
 request
-    .post(url)
-    .send(JSON.stringify({
-      body: data,
-      network_id: TxCreateOwner.network_id,
-      protocol_version: TxCreateOwner.protocol_version,
-      service_id: TxCreateOwner.service_id,
-      message_id: TxCreateOwner.message_id,
-      signature: signature
-    }))
-    .end((err, res) => {
-      console.log(res.statusCode)
-    });
+  .post(url)
+  .send(JSON.stringify({
+    body: data,
+    network_id: TxCreateOwner.network_id,
+    protocol_version: TxCreateOwner.protocol_version,
+    service_id: TxCreateOwner.service_id,
+    message_id: TxCreateOwner.message_id,
+    signature: signature
+  }))
+  .end((err, res) => {
+    console.log(res.statusCode)
+  });
