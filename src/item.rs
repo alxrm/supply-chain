@@ -17,7 +17,6 @@ encoding_struct! {
     }
 }
 
-
 impl Item {
     pub fn change_owner(&mut self, next_owner: &Owner) -> bool {
         if next_owner.pub_key() == self.owner_key() {
