@@ -9,7 +9,7 @@ const postTransaction = (transactionType, params, secret) => {
 
   return new Promise((resolve, reject) => {
     request
-      .post(SERVICE_URL + '/transaction')
+      .post(`${SERVICE_URL}/transaction`)
       .send(JSON.stringify({
         body: seeded,
         network_id: transactionType.network_id,
@@ -49,6 +49,5 @@ const TransactionApi = {
     return postTransaction(TxReceiveGroup, { next_owner: user.publicKey, group }, user.secretKey);
   }
 };
-
 
 module.exports = TransactionApi;
