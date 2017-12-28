@@ -22,8 +22,10 @@ status_timeout = 5000
 txs_block_limit = 1000
 
 [genesis.consensus.timeout_adjuster]
-timeout = 2000
-type = "Constant"
+min = 500
+max = 2000
+threshold = 100
+type = "Dynamic"
 
 [mempool]
 tx_pool_capacity = 100000
