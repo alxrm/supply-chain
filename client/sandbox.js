@@ -16,6 +16,7 @@ const anotherUser = {
 const groupId = '8fd6d1267adb4d3ebb8fba9b9f34cbeb';
 const itemUid = '29ad265cbe854023a7438c6442aca096';
 
+
 TransactionApi.createOwner('Mark Sachs')
 //TransactionApi.addItem(itemUid, 'Super-duper-item')
 //TransactionApi.attachToGroup(itemUid, groupId)
