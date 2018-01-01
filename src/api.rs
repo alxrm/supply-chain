@@ -125,6 +125,25 @@ impl<T> SupplyChainApi<T> where T: TransactionSend + Clone {
         Ok(res)
     }
 
+    fn items_by_owner(&self, pub_key: &PublicKey) -> Result<HashMap<String, Item>, ApiError> {
+        let mut view = self.blockchain.fork();
+        let mut schema = SupplyChainSchema::new(&mut view);
+        let all_items: MapIndex<&mut Fork, String, Item> = schema.items_mut();
+        let mut res = HashMap::with_capacity(all_items.values().count());
+
+        all_items.iter()
+            .filter(|pair| {
+                let item = &pair.1;
+
+                item.owner_key() == pub_key
+            })
+            .for_each(|pair| {
+                res.insert(pair.0, pair.1);
+            });
+
+        Ok(res)
+    }
+
     fn post_transaction(&self, tx: BaseTransaction) -> Result<Hash, ApiError> {
         let tx_hash = tx.hash();
         match self.channel.send(Box::new(tx)) {
@@ -210,6 +229,21 @@ impl<T> ApiHandler<T> where T: 'static + TransactionSend + Clone {
         }
     }
 
+    fn handle_items_by_owner(&self, req: &mut Request) -> IronResult<Response> {
+        let path = req.url.path();
+        let owner_key = path.last().unwrap();
+        let public_key = PublicKey::from_hex(owner_key).map_err(ApiError::FromHex)?;
+        let api = &self.api;
+
+        match api.items_by_owner(&public_key) {
+            Ok(items) => api.ok_response(&to_value(items).unwrap()),
+            Err(e) => {
+                error!("Error in handle_items_by_owner: {}", e);
+                api.not_found_response(&to_value("Owner not found").unwrap())
+            }
+        }
+    }
+
     fn handle_post_transaction(&self, req: &mut Request) -> IronResult<Response> {
         let api = &self.api;
 
@@ -237,13 +271,17 @@ impl<T> Api for SupplyChainApi<T> where T: 'static + TransactionSend + Clone {
         let item_route = move |req: &mut Request| handler_clone.handle_item(req);
 
         let handler_clone = handler.clone();
+        let items_by_owner_route = move |req: &mut Request| handler_clone.handle_items_by_owner(req);
+
+        let handler_clone = handler.clone();
         let group_route = move |req: &mut Request| handler_clone.handle_group(req);
 
         let handler_clone = handler.clone();
         let owner_route = move |req: &mut Request| handler_clone.handle_owner(req);
 
         router.post(&"/v1/transaction", transaction_route, "transaction");
-        router.get(&"/v1/item/:uid", item_route, "item");
+        router.get(&"/v1/items/:uid", item_route, "item");
+        router.get(&"/v1/items/:pubKey", items_by_owner_route, "items_by_owner");
         router.get(&"/v1/group/:groupId", group_route, "group");
         router.get(&"/v1/owner/:pubKey", owner_route, "owner");
 

@@ -67,10 +67,6 @@ impl<'a> SupplyChainSchema<&'a mut Fork> {
         MapIndex::new(ITEMS_TABLE, self.view)
     }
 
-    pub fn owner_items_mut(&mut self, owner_key: &PublicKey) -> MapIndex<&mut Fork, String, Item> {
-        MapIndex::new(OWNER_ITEMS_TABLE, self.view)
-    }
-
     pub fn group_mut(&mut self, group_id: &String) -> MapIndex<&mut Fork, String, Item> {
         MapIndex::new(group_id, self.view)
     }
