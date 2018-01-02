@@ -28,7 +28,7 @@ threshold = 100
 type = "Dynamic"
 
 [mempool]
-tx_pool_capacity = 100000
+tx_pool_capacity = 1000
 
 [mempool.events_pool_capacity]
 api_requests_capacity = 1024
@@ -46,5 +46,5 @@ tcp_nodelay = true
 [services_configs]
 
 [whitelist]
-whitelist_enabled = true
+whitelist_enabled = false
 whitelisted_peers = []
