@@ -230,10 +230,16 @@ impl<T> ApiHandler<T> where T: 'static + TransactionSend + Clone {
     }
 
     fn handle_items_by_owner(&self, req: &mut Request) -> IronResult<Response> {
-        let path = req.url.path();
-        let owner_key = path.last().unwrap();
-        let public_key = PublicKey::from_hex(owner_key).map_err(ApiError::FromHex)?;
+        let owner_key = req.extensions.get::<Router>().unwrap().find("pubKey");
         let api = &self.api;
+        let public_key = match owner_key {
+            Some(key) => PublicKey::from_hex(key).map_err(ApiError::FromHex)?,
+            None => {
+                return Err(ApiError::IncorrectRequest(
+                    "Incorrect request: no public key provided".into()
+                ))?
+            }
+        };
 
         match api.items_by_owner(&public_key) {
             Ok(items) => api.ok_response(&to_value(items).unwrap()),
@@ -281,9 +287,9 @@ impl<T> Api for SupplyChainApi<T> where T: 'static + TransactionSend + Clone {
 
         router.post(&"/v1/transaction", transaction_route, "transaction");
         router.get(&"/v1/items/:uid", item_route, "item");
-        router.get(&"/v1/items/:pubKey", items_by_owner_route, "items_by_owner");
-        router.get(&"/v1/group/:groupId", group_route, "group");
-        router.get(&"/v1/owner/:pubKey", owner_route, "owner");
+        router.get(&"/v1/groups/:groupId", group_route, "group");
+        router.get(&"/v1/owners/:pubKey/items", items_by_owner_route, "items_by_owner");
+        router.get(&"/v1/owners/:pubKey", owner_route, "owner");
 
         println!("Wired API methods");
     }
