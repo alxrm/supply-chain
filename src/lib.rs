@@ -10,6 +10,7 @@ extern crate exonum;
 extern crate params;
 extern crate router;
 extern crate iron;
+extern crate hyper;
 extern crate bodyparser;
 
 pub mod owner;

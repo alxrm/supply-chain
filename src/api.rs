@@ -1,6 +1,7 @@
 use serde::Serialize;
 use router::Router;
 use iron::prelude::*;
+use hyper::header::AccessControlAllowOrigin;
 use bodyparser;
 
 use std::collections::HashMap;
@@ -55,6 +56,8 @@ struct TxResponse {
 
 impl<T> SupplyChainApi<T> where T: TransactionSend + Clone {
     fn owner(&self, pub_key: &PublicKey) -> Result<AuditedEntityInfo<Owner>, ApiError> {
+        println!("/owners/{}", pub_key.to_string());
+
         let view = self.blockchain.snapshot();
         let general_schema = blockchain::Schema::new(&view);
 
@@ -84,6 +87,8 @@ impl<T> SupplyChainApi<T> where T: TransactionSend + Clone {
     }
 
     fn item(&self, item_uid: &String) -> Result<AuditedEntityInfo<Item>, ApiError> {
+        println!("/items/{}", item_uid);
+
         let view = self.blockchain.snapshot();
         let general_schema = blockchain::Schema::new(&view);
 
@@ -113,6 +118,8 @@ impl<T> SupplyChainApi<T> where T: TransactionSend + Clone {
     }
 
     fn group(&self, group_id: &String) -> Result<HashMap<String, Item>, ApiError> {
+        println!("/groups/{}", group_id);
+
         let mut view = self.blockchain.fork();
         let mut schema = SupplyChainSchema::new(&mut view);
         let group_items: MapIndex<&mut Fork, String, Item> = schema.group_mut(group_id);
@@ -126,6 +133,8 @@ impl<T> SupplyChainApi<T> where T: TransactionSend + Clone {
     }
 
     fn items_by_owner(&self, pub_key: &PublicKey) -> Result<HashMap<String, Item>, ApiError> {
+        println!("/owner/{}/items", pub_key.to_string());
+
         let mut view = self.blockchain.fork();
         let mut schema = SupplyChainSchema::new(&mut view);
         let all_items: MapIndex<&mut Fork, String, Item> = schema.items_mut();
@@ -145,6 +154,8 @@ impl<T> SupplyChainApi<T> where T: TransactionSend + Clone {
     }
 
     fn post_transaction(&self, tx: BaseTransaction) -> Result<Hash, ApiError> {
+        println!("/transaction");
+
         let tx_hash = tx.hash();
         match self.channel.send(Box::new(tx)) {
             Ok(_) => Ok(tx_hash),
@@ -192,41 +203,53 @@ impl<T> ApiHandler<T> where T: 'static + TransactionSend + Clone {
         let owner_key = path.last().unwrap();
         let public_key = PublicKey::from_hex(owner_key).map_err(ApiError::FromHex)?;
         let api = &self.api;
-
-        match api.owner(&public_key) {
+        let origin = match api.owner(&public_key) {
             Ok(own) => api.ok_response(&to_value(own).unwrap()),
             Err(e) => {
                 error!("Error in handle_owner: {}", e);
                 api.not_found_response(&to_value("Owner not found").unwrap())
             }
-        }
+        };
+
+        let mut res = origin.unwrap();
+        res.headers.set(AccessControlAllowOrigin::Any);
+
+        Ok(res)
     }
 
     fn handle_item(&self, req: &mut Request) -> IronResult<Response> {
         let path = req.url.path();
         let item_uid = path.last().unwrap().to_string();
         let api = &self.api;
-
-        match api.item(&item_uid) {
+        let origin = match api.item(&item_uid) {
             Ok(item) => api.ok_response(&to_value(item).unwrap()),
             Err(e) => {
                 error!("Error in handle_item: {}", e);
                 api.not_found_response(&to_value("Item not found").unwrap())
             }
-        }
+        };
+
+        let mut res = origin.unwrap();
+        res.headers.set(AccessControlAllowOrigin::Any);
+
+        Ok(res)
     }
 
     fn handle_group(&self, req: &mut Request) -> IronResult<Response> {
         let path = req.url.path();
         let group_id = path.last().unwrap().to_string();
         let api = &self.api;
-
-        match api.group(&group_id) {
+        let origin = match api.group(&group_id) {
             Ok(items) => api.ok_response(&to_value(items).unwrap()),
             Err(_) => {
                 api.not_found_response(&to_value("Group not found").unwrap())
             }
-        }
+        };
+
+        let mut res = origin.unwrap();
+        res.headers.set(AccessControlAllowOrigin::Any);
+
+        Ok(res)
     }
 
     fn handle_items_by_owner(&self, req: &mut Request) -> IronResult<Response> {
@@ -237,23 +260,27 @@ impl<T> ApiHandler<T> where T: 'static + TransactionSend + Clone {
             None => {
                 return Err(ApiError::IncorrectRequest(
                     "Incorrect request: no public key provided".into()
-                ))?
+                ))?;
             }
         };
 
-        match api.items_by_owner(&public_key) {
+        let origin = match api.items_by_owner(&public_key) {
             Ok(items) => api.ok_response(&to_value(items).unwrap()),
             Err(e) => {
                 error!("Error in handle_items_by_owner: {}", e);
                 api.not_found_response(&to_value("Owner not found").unwrap())
             }
-        }
+        };
+
+        let mut res = origin.unwrap();
+        res.headers.set(AccessControlAllowOrigin::Any);
+
+        Ok(res)
     }
 
     fn handle_post_transaction(&self, req: &mut Request) -> IronResult<Response> {
         let api = &self.api;
-
-        match req.get::<bodyparser::Struct<BaseTransaction>>() {
+        let origin = match req.get::<bodyparser::Struct<BaseTransaction>>() {
             Ok(Some(transaction)) => {
                 let tx_hash = api.post_transaction(transaction)?;
                 let json = TxResponse { tx_hash };
@@ -261,7 +288,12 @@ impl<T> ApiHandler<T> where T: 'static + TransactionSend + Clone {
             }
             Ok(None) => Err(ApiError::IncorrectRequest("Empty request body".into()))?,
             Err(e) => Err(ApiError::IncorrectRequest(Box::new(e)))?,
-        }
+        };
+
+        let mut res = origin.unwrap();
+        res.headers.set(AccessControlAllowOrigin::Any);
+
+        Ok(res)
     }
 }
 
