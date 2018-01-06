@@ -1,8 +1,15 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
-import registerServiceWorker from './utils/serviceWorkerUtils';
-import App from './components';
+import {createStore, applyMiddleware} from 'redux';
+import promiseMiddleware from 'redux-promise';
+import logger from 'redux-logger';
 
-ReactDOM.render(<App />, document.getElementById('root'));
+import registerServiceWorker from './utils/registerServiceWorker';
+import reducers from './reducers';
+import App from './components/App';
+import './index.css';
+
+const store = createStore(reducers, applyMiddleware(promiseMiddleware, logger));
+
+ReactDOM.render(<App store={store} />, document.getElementById('root'));
 registerServiceWorker();

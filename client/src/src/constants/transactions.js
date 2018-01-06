@@ -1,13 +1,13 @@
-const Exonum = require('exonum-client');
-const { SERVICE_ID } = require('./config');
+import Exonum from 'exonum-client';
+import { SERVICE_ID } from './configs';
 
-const TX_CREATE_OWNER_ID = 128;
-const TX_ADD_ITEM_ID = 129;
-const TX_ATTACH_TO_GROUP_ID = 130;
-const TX_SEND_GROUP = 131;
-const TX_RECEIVE_GROUP = 132;
+export const TX_CREATE_OWNER_ID = 128;
+export const TX_ADD_ITEM_ID = 129;
+export const TX_ATTACH_TO_GROUP_ID = 130;
+export const TX_SEND_GROUP = 131;
+export const TX_RECEIVE_GROUP = 132;
 
-const TxCreateOwner = Exonum.newMessage({
+export const TxCreateOwner = Exonum.newMessage({
   size: 48,
   network_id: 1,
   protocol_version: 1,
@@ -20,7 +20,7 @@ const TxCreateOwner = Exonum.newMessage({
   }
 });
 
-const TxAddItem = Exonum.newMessage({
+export const TxAddItem = Exonum.newMessage({
   size: 56,
   network_id: 1,
   protocol_version: 1,
@@ -34,7 +34,7 @@ const TxAddItem = Exonum.newMessage({
   }
 });
 
-const TxAttachToGroup = Exonum.newMessage({
+export const TxAttachToGroup = Exonum.newMessage({
   size: 56,
   network_id: 1,
   protocol_version: 1,
@@ -48,7 +48,7 @@ const TxAttachToGroup = Exonum.newMessage({
   }
 });
 
-const TxSendGroup = Exonum.newMessage({
+export const TxSendGroup = Exonum.newMessage({
   size: 48,
   network_id: 1,
   protocol_version: 1,
@@ -61,7 +61,7 @@ const TxSendGroup = Exonum.newMessage({
   }
 });
 
-const TxReceiveGroup = Exonum.newMessage({
+export const TxReceiveGroup = Exonum.newMessage({
   size: 48,
   network_id: 1,
   protocol_version: 1,
@@ -73,11 +73,3 @@ const TxReceiveGroup = Exonum.newMessage({
     seed: { type: Exonum.Uint64, size: 8, from: 40, to: 48 }
   }
 });
-
-module.exports = {
-  TxCreateOwner,
-  TxAddItem,
-  TxAttachToGroup,
-  TxSendGroup,
-  TxReceiveGroup
-};

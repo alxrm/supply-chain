@@ -28,39 +28,3 @@
 //     console.log('Response', r.body);
 //   })
 
-const createActions = (actionsSrc) => {
-  const actionsClone = Object.assign(actionsSrc, {});
-
-  Object.keys(actionsClone).forEach(key => {
-    const action = actionsClone[key];
-    const result = action();
-    const isAsync = typeof result === 'function';
-
-    if (!isAsync) {
-      actionsClone[key] = () => ({
-        type: key,
-        data: action()
-      });
-    }
-  });
-
-  return actionsClone;
-};
-
-
-const actions = createActions({
-  login() {
-    return dispatch => ({ state: 'success', user: 'huy' })
-  },
-
-  b() {
-    return 'b'
-  },
-
-  c() {
-    return 'c'
-  }
-});
-
-
-console.log(((a, b) => { }).length)
