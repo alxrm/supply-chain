@@ -1,6 +1,7 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import {LinkContainer} from 'react-router-bootstrap';
+import {Fade} from "react-bootstrap";
 
 import {mapDispatchToProps} from '../../actions';
 
@@ -12,10 +13,12 @@ import FormButton from './FormButton';
 import FormCaption from './FormCaption';
 
 const Signup = ({ signup, publicKey, secretKey }) => (
-  <CenteringContainer bgColor="#2f2f2f">
+  <CenteringContainer>
     <AuthForm>
       <FormTitle>Create new account</FormTitle>
-      {publicKey.length ? <FormCaption>Please keep these keys safe</FormCaption> : <span />}
+      <Fade in={publicKey.length && secretKey.length}>
+        <FormCaption>Please keep these keys safe</FormCaption>
+      </Fade>
       <AuthInput
         type="text"
         value={publicKey}

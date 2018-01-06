@@ -1,6 +1,7 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import {LinkContainer} from 'react-router-bootstrap';
+import {Fade} from "react-bootstrap";
 
 import {mapDispatchToProps} from '../../actions';
 
@@ -15,7 +16,9 @@ const Login = ({ login, changeFormField, error, publicKey, secretKey }) => (
   <CenteringContainer>
     <AuthForm>
       <FormTitle>Login</FormTitle>
-      {error ? <FormCaption error>Invalid key pair provided</FormCaption> : <span />}
+      <Fade in={error}>
+        <FormCaption error>Invalid key pair provided</FormCaption>
+      </Fade>
       <AuthInput
         type="text"
         id="publicKey"
