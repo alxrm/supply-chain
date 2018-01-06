@@ -1,6 +1,6 @@
 import {handleActions} from 'redux-actions';
 
-const owner = handleActions({
+export const owner = handleActions({
   ownerByKey(state, action) {
     return { data: {} };
   }

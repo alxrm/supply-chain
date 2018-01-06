@@ -1,4 +1,4 @@
-import Exonum from 'exonum-client';
+import { randomUint64 } from 'exonum-client';
 import request from 'superagent';
 
 import {SERVICE_URL} from '../constants/configs';
@@ -11,7 +11,7 @@ import {
 } from '../constants/transactions';
 
 const postTransaction = (transactionType, params, secret) => {
-  const seeded = Object.assign(params, { seed: Exonum.randomUint64() });
+  const seeded = Object.assign(params, { seed: randomUint64() });
   const signature = transactionType.sign(secret, seeded);
 
   return new Promise((resolve, reject) => {

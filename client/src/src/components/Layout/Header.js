@@ -1,8 +1,10 @@
 import React from 'react';
 import {Nav, Navbar, NavItem} from 'react-bootstrap';
 import {LinkContainer} from 'react-router-bootstrap';
+import {mapDispatchToProps} from "../../actions";
+import {connect} from "react-redux";
 
-export default () => (
+const Header = ({ logout }) => (
   <Navbar inverse collapseOnSelect fixedTop fluid>
     <Navbar.Header>
       <LinkContainer to="/">
@@ -20,8 +22,11 @@ export default () => (
         </LinkContainer>
       </Nav>
       <Nav pullRight>
-        <NavItem href="#">Logout</NavItem>
+        <NavItem onClick={logout}>Logout</NavItem>
       </Nav>
     </Navbar.Collapse>
   </Navbar>
 );
+
+
+export default connect(() => ({}), mapDispatchToProps)(Header);
