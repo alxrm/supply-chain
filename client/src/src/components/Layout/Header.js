@@ -1,7 +1,7 @@
 import React from 'react';
 import {Nav, Navbar, NavItem} from 'react-bootstrap';
 import {LinkContainer} from 'react-router-bootstrap';
-import connectWithDispatch from '../../utils/connectWithDispatch';
+import connectWithDispatch, {none} from '../../utils/connectWithDispatch';
 
 const Header = ({ logout }) => (
   <Navbar inverse collapseOnSelect fixedTop fluid>
@@ -28,4 +28,4 @@ const Header = ({ logout }) => (
 );
 
 
-export default connectWithDispatch()(Header);
+export default connectWithDispatch(none, { pure: false })(Header);
