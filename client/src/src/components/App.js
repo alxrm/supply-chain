@@ -1,10 +1,10 @@
 import React from 'react';
-import {Provider, connect} from 'react-redux';
+import {Provider} from 'react-redux';
 import {Route, Redirect, Switch, BrowserRouter} from 'react-router-dom';
 import 'normalize.css';
 import 'flexboxgrid2';
 
-import {mapDispatchToProps} from '../actions';
+import connectWithDispatch from '../utils/connectWithDispatch';
 
 import Header from './Layout/Header';
 import Content from './Layout/Content';
@@ -48,6 +48,6 @@ const App = ({ store, isAuthorized }) => (
   </Provider>
 );
 
-export default connect(state => ({
+export default connectWithDispatch(state => ({
   isAuthorized: state.auth.isAuthorized
-}), mapDispatchToProps)(App);
+}))(App);

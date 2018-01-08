@@ -1,6 +1,6 @@
 import {handleActions} from 'redux-actions';
 
-const initial = {
+export const AUTH_INITIAL_STATE = {
   isAuthorized: false,
   error: false,
   user: {
@@ -10,12 +10,12 @@ const initial = {
 };
 
 export const auth = handleActions({
+  signup(state, action) {
+    if (!action.payload) {
+      return state;
+    }
 
-  changeFormField(state, action) {
-    const { user } = state;
-    const { field, value } = action.payload;
-
-    return { ...state, error: false, user: { ...user, [field]: value } };
+    return { ...state, error: false, user: action.payload };
   },
 
   login(state, action) {
@@ -24,17 +24,21 @@ export const auth = handleActions({
     return { ...state, error, isAuthorized };
   },
 
-  logout() {
-    return initial;
+  changeLoginFormField(state, action) {
+    const { user } = state;
+    const { field, value } = action.payload;
+
+    return { ...state, error: false, user: { ...user, [field]: value } };
   },
 
-  signup(state, action) {
-    if (!action.payload) {
-      return state;
-    }
+  restoreAuthSession(state, action) {
+    return action.payload;
+  },
 
-    return { ...state, error: false, user: action.payload };
-  }
-}, initial);
+  logout(state, action) {
+    return action.payload;
+  },
+
+}, AUTH_INITIAL_STATE);
 
 export default auth;

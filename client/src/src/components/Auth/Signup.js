@@ -1,9 +1,8 @@
 import React from 'react';
-import {connect} from 'react-redux';
 import {LinkContainer} from 'react-router-bootstrap';
 import {Fade} from "react-bootstrap";
 
-import {mapDispatchToProps} from '../../actions';
+import connectWithDispatch from '../../utils/connectWithDispatch';
 
 import CenteringContainer from '../Layout/CenteringContainer';
 import AuthForm from './AuthForm';
@@ -12,12 +11,27 @@ import AuthInput from './AuthInput';
 import FormButton from './FormButton';
 import FormCaption from './FormCaption';
 
-const Signup = ({ signup, publicKey, secretKey }) => (
+const renderNoKeysButtons = signup => (
+  <div>
+    <FormButton onClick={signup} primary>Generate keys</FormButton>
+    <LinkContainer to="/login">
+      <FormButton>Back to login</FormButton>
+    </LinkContainer>
+  </div>
+);
+
+const renderKeysReadyButtons = (login, publicKey, secretKey) => (
+  <div className="center-md">
+    <FormButton onClick={() => login(publicKey, secretKey)} primary>Login</FormButton>
+  </div>
+);
+
+const Signup = ({ login, signup, publicKey, secretKey, isKeyPairCreated }) => (
   <CenteringContainer>
     <AuthForm>
       <FormTitle>Create new account</FormTitle>
-      <Fade in={publicKey.length && secretKey.length}>
-        <FormCaption>Please keep these keys safe</FormCaption>
+      <Fade in={isKeyPairCreated}>
+        <FormCaption success>Please keep these keys safe</FormCaption>
       </Fade>
       <AuthInput
         type="text"
@@ -31,15 +45,17 @@ const Signup = ({ signup, publicKey, secretKey }) => (
         placeholder="Secret key"
         readOnly
       />
-      <FormButton onClick={signup} primary>Generate keys</FormButton>
-      <LinkContainer to="/login">
-        <FormButton>Back to login</FormButton>
-      </LinkContainer>
+      {
+        isKeyPairCreated
+          ? renderKeysReadyButtons(login, publicKey, secretKey)
+          : renderNoKeysButtons(signup)
+      }
     </AuthForm>
   </CenteringContainer>
 );
 
-export default connect(state => ({
+export default connectWithDispatch(state => ({
   publicKey: state.auth.user.publicKey,
-  secretKey: state.auth.user.secretKey
-}), mapDispatchToProps)(Signup);
+  secretKey: state.auth.user.secretKey,
+  isKeyPairCreated: !!(state.auth.user.publicKey && state.auth.user.secretKey)
+}))(Signup);

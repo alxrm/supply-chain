@@ -11,6 +11,10 @@ const FormTitle = styled.p`
   ${props => props.error && css`
     color: #ff6a5e
   `}
+  
+  ${props => props.success && css`
+    color: #3eff7b
+  `}
 `;
 
 export default FormTitle;

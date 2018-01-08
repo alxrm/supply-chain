@@ -1,9 +1,8 @@
 import React from 'react';
-import {connect} from 'react-redux';
 import {LinkContainer} from 'react-router-bootstrap';
 import {Fade} from "react-bootstrap";
 
-import {mapDispatchToProps} from '../../actions';
+import connectWithDispatch from '../../utils/connectWithDispatch';
 
 import CenteringContainer from '../Layout/CenteringContainer';
 import AuthForm from './AuthForm';
@@ -12,7 +11,7 @@ import AuthInput from './AuthInput';
 import FormButton from './FormButton';
 import FormCaption from './FormCaption';
 
-const Login = ({ login, changeFormField, error, publicKey, secretKey }) => (
+const Login = ({ login, logout, changeLoginFormField, error, publicKey, secretKey }) => (
   <CenteringContainer>
     <AuthForm>
       <FormTitle>Login</FormTitle>
@@ -23,26 +22,26 @@ const Login = ({ login, changeFormField, error, publicKey, secretKey }) => (
         type="text"
         id="publicKey"
         placeholder="Public key"
-        onChange={changeFormField}
+        onChange={changeLoginFormField}
         value={publicKey}
       />
       <AuthInput
         type="text"
         id="secretKey"
         placeholder="Secret key"
-        onChange={changeFormField}
+        onChange={changeLoginFormField}
         value={secretKey}
       />
       <FormButton onClick={() => login(publicKey, secretKey)} primary>Login</FormButton>
       <LinkContainer to="/signup">
-        <FormButton>Sign up</FormButton>
+        <FormButton onClick={logout}>Sign up</FormButton>
       </LinkContainer>
     </AuthForm>
   </CenteringContainer>
 );
 
-export default connect(state => ({
+export default connectWithDispatch(state => ({
   publicKey: state.auth.user.publicKey,
   secretKey: state.auth.user.secretKey,
   error: state.auth.error
-}), mapDispatchToProps)(Login);
+}))(Login);

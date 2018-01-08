@@ -1,12 +1,14 @@
 import {keyPair, sign, verifySignature} from 'exonum-client';
 import times from 'lodash.times';
 import random from 'lodash.random';
+
 import FileUtils from './FileUtils';
+import { FILE_NAME_KEY_PAIR } from '../constants/configs';
 
 export const ExonumUtils = {
   generateKeyPair() {
     const pair = keyPair();
-    FileUtils.saveAsJson(pair, 'BrandchainKeyPair.json');
+    FileUtils.downloadAsJson(pair, FILE_NAME_KEY_PAIR);
 
     return pair;
   },
