@@ -15,13 +15,9 @@ export const ExonumUtils = {
 
   validateKeyPair(publicKey, secretKey) {
     const randomBuffer = this.randomByteBufferOfSize();
+    const signature = sign(secretKey, randomBuffer);
 
-    try {
-      const signature = sign(secretKey, randomBuffer);
-      return verifySignature(signature, publicKey, randomBuffer);
-    } catch (e) {
-      return e;
-    }
+    return verifySignature(signature, publicKey, randomBuffer);
   },
 
   randomByteBufferOfSize(size = 32) {

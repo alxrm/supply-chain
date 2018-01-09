@@ -12,7 +12,7 @@ import FormButton from './FormButton';
 import FormCaption from './FormCaption';
 
 const renderNoKeysButtons = (signup, name) => (
-  <div>
+  <div className="center-md">
     <FormButton onClick={() => signup(name)} primary>Generate keys</FormButton>
     <LinkContainer to="/login">
       <FormButton>Back to login</FormButton>

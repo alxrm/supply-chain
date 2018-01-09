@@ -32,10 +32,12 @@ const Login = ({ login, logout, changeFormField, error, publicKey, secretKey }) 
         onChange={changeFormField}
         value={secretKey}
       />
-      <FormButton onClick={() => login(publicKey, secretKey)} primary>Login</FormButton>
-      <LinkContainer to="/signup">
-        <FormButton onClick={logout}>Sign up</FormButton>
-      </LinkContainer>
+      <div className="center-md">
+        <FormButton onClick={() => login(publicKey, secretKey)} primary>Login</FormButton>
+        <LinkContainer to="/signup">
+          <FormButton onClick={logout}>Sign up</FormButton>
+        </LinkContainer>
+      </div>
     </AuthForm>
   </CenteringContainer>
 );
