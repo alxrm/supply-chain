@@ -1,11 +1,9 @@
 #!/usr/bin/env bash
 
-if [ -z "$1" ]; then
-    echo 'Usage: ./git-sync-commit.sh <Commit message text here>';
-    exit 1;
-fi
+IFS= read -r -p "Enter commit message: " message
+echo "$message"
 
-git commit . -m "$1";
+git commit . -m "$message";
 git checkout bitbucket;
 git merge master --allow-unrelated-histories;
 git push exonum-blockchain bitbucket;
