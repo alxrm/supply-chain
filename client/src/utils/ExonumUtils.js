@@ -20,7 +20,7 @@ export const ExonumUtils = {
       const signature = sign(secretKey, randomBuffer);
       return verifySignature(signature, publicKey, randomBuffer);
     } catch (e) {
-      return false;
+      return e;
     }
   },
 

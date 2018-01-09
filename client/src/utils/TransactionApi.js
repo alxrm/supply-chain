@@ -1,4 +1,4 @@
-import { randomUint64 } from 'exonum-client';
+import {randomUint64} from 'exonum-client';
 import request from 'superagent';
 
 import {SERVICE_URL} from '../constants/configs';
@@ -56,3 +56,5 @@ export const TransactionApi = {
     return await postTransaction(TxReceiveGroup, { next_owner: user.publicKey, group }, user.secretKey);
   }
 };
+
+export default TransactionApi;

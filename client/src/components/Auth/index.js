@@ -11,7 +11,7 @@ import AuthInput from './AuthInput';
 import FormButton from './FormButton';
 import FormCaption from './FormCaption';
 
-const Login = ({ login, logout, changeLoginFormField, error, publicKey, secretKey }) => (
+const Login = ({ login, logout, changeFormField, error, publicKey, secretKey }) => (
   <CenteringContainer>
     <AuthForm>
       <FormTitle>Login</FormTitle>
@@ -22,14 +22,14 @@ const Login = ({ login, logout, changeLoginFormField, error, publicKey, secretKe
         type="text"
         id="publicKey"
         placeholder="Public key"
-        onChange={changeLoginFormField}
+        onChange={changeFormField}
         value={publicKey}
       />
       <AuthInput
         type="text"
         id="secretKey"
         placeholder="Secret key"
-        onChange={changeLoginFormField}
+        onChange={changeFormField}
         value={secretKey}
       />
       <FormButton onClick={() => login(publicKey, secretKey)} primary>Login</FormButton>

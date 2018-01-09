@@ -4,29 +4,32 @@ export const AUTH_INITIAL_STATE = {
   isAuthorized: false,
   error: false,
   user: {
+    name: '',
     publicKey: '',
     secretKey: ''
   }
 };
 
 export const auth = handleActions({
-  signup(state, action) {
-    if (!action.payload) {
-      return state;
+  signup(state, { payload, error }) {
+    if (error) {
+      return { ...state, error };
     }
 
-    return { ...state, error: false, user: action.payload };
+    return { ...state, error: false, user: payload };
   },
 
-  login(state, action) {
-    const { isAuthorized, error } = action.payload;
+  login(state, { payload, error }) {
+    if (error) {
+      return { ...state, error };
+    }
 
-    return { ...state, error, isAuthorized };
+    return { ...payload, error: false };
   },
 
-  changeLoginFormField(state, action) {
+  changeFormField(state, { payload }) {
     const { user } = state;
-    const { field, value } = action.payload;
+    const { field, value } = payload;
 
     return { ...state, error: false, user: { ...user, [field]: value } };
   },
