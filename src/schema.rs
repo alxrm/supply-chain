@@ -1,3 +1,4 @@
+use std::fmt;
 
 use exonum::crypto::{PublicKey, Hash};
 use exonum::storage::{Snapshot, Fork, ProofMapIndex, ProofListIndex, MapIndex};
