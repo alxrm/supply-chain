@@ -20,5 +20,3 @@ pub mod transactions;
 pub mod service;
 pub mod schema;
 pub mod api;
-
-//////// test
