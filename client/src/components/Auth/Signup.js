@@ -49,7 +49,6 @@ const renderKeysFields = (isKeyPairCreated, publicKey, secretKey) => {
   );
 };
 
-
 const Signup = ({ login, signup, error, name, publicKey, secretKey, changeFormField, isKeyPairCreated }) => (
   <CenteringContainer>
     <AuthForm>
