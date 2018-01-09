@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 IFS= read -r -p "Enter commit message: " message
-echo "$message"
 
 git commit . -m "$message";
 git checkout bitbucket;
