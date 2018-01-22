@@ -6,5 +6,6 @@ encoding_struct! {
 
         field tx_hash:                &Hash  [00 => 32]
         field execution_status:       bool   [32 => 33]
+        field execution_time:         i64    [33 => 41]
     }
 }

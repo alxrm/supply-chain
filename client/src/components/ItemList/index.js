@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
-import times from 'lodash.times';
 import styled from 'styled-components';
+import { Checkbox } from 'react-bootstrap';
 
 import connectWithDispatch from '../../utils/connectWithDispatch';
 
@@ -25,7 +25,10 @@ class ItemList extends Component {
     return (
       <div>
         {Object.keys(items).map(it =>
-          <ItemCard key={it}>Item: {items[it].name}</ItemCard>
+          <ItemCard key={it}>
+            <div>Item: {items[it].name}</div>
+            <Checkbox/>
+          </ItemCard>
         )}
       </div>
     );
