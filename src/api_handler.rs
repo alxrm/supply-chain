@@ -1,16 +1,42 @@
+use router::Router;
+use iron::prelude::*;
+use iron::middleware::Handler;
+use hyper::header::AccessControlAllowOrigin;
+use bodyparser;
+
+use exonum::api::{Api, ApiError};
+use exonum::node::TransactionSend;
+use exonum::crypto::{HexValue, PublicKey};
+use exonum::storage::ProofListIndex;
+use exonum::blockchain::Schema;
+use exonum::encoding::serialize::json::reexport as serde_json;
+
+use self::serde_json::to_value;
+use super::api::{SupplyChainApi, TxResponse};
+use super::transactions::BaseTransaction;
+
+
 #[derive(Clone)]
-struct ApiHandler<T: TransactionSend + Clone> {
+pub struct ApiHandler<T: TransactionSend + Clone> {
     pub api: SupplyChainApi<T>,
 }
 
+impl<T> Handler for ApiHandler<T> where T: 'static + TransactionSend + Clone {
+    fn handle(&self, _: &mut Request) -> IronResult<Response> {
+        let res = self.api.ok_response(&to_value("Test!").unwrap()).unwrap();
+
+        Ok(res)
+    }
+}
+
 impl<T> ApiHandler<T> where T: 'static + TransactionSend + Clone {
-    fn new(api: SupplyChainApi<T>) -> Self {
+    pub fn new(api: SupplyChainApi<T>) -> Self {
         ApiHandler {
             api
         }
     }
 
-    fn handle_owner(&self, req: &mut Request) -> IronResult<Response> {
+    pub fn handle_owner(&self, req: &mut Request) -> IronResult<Response> {
         let path = req.url.path();
         let owner_key = path.last().unwrap();
         let public_key = PublicKey::from_hex(owner_key).map_err(ApiError::FromHex)?;
@@ -29,7 +55,7 @@ impl<T> ApiHandler<T> where T: 'static + TransactionSend + Clone {
         Ok(res)
     }
 
-    fn handle_item(&self, req: &mut Request) -> IronResult<Response> {
+    pub fn handle_item(&self, req: &mut Request) -> IronResult<Response> {
         let path = req.url.path();
         let item_uid = path.last().unwrap().to_string();
         let api = &self.api;
@@ -47,7 +73,7 @@ impl<T> ApiHandler<T> where T: 'static + TransactionSend + Clone {
         Ok(res)
     }
 
-    fn handle_group(&self, req: &mut Request) -> IronResult<Response> {
+    pub fn handle_group(&self, req: &mut Request) -> IronResult<Response> {
         let path = req.url.path();
         let group_id = path.last().unwrap().to_string();
         let api = &self.api;
@@ -64,7 +90,7 @@ impl<T> ApiHandler<T> where T: 'static + TransactionSend + Clone {
         Ok(res)
     }
 
-    fn handle_items_by_owner(&self, req: &mut Request) -> IronResult<Response> {
+    pub fn handle_items_by_owner(&self, req: &mut Request) -> IronResult<Response> {
         let owner_key = req.extensions.get::<Router>().unwrap().find("pubKey");
         let api = &self.api;
         let public_key = match owner_key {
@@ -90,7 +116,7 @@ impl<T> ApiHandler<T> where T: 'static + TransactionSend + Clone {
         Ok(res)
     }
 
-    fn handle_post_transaction(&self, req: &mut Request) -> IronResult<Response> {
+    pub fn handle_post_transaction(&self, req: &mut Request) -> IronResult<Response> {
         let api = &self.api;
         let origin = match req.get::<bodyparser::Struct<BaseTransaction>>() {
             Ok(Some(transaction)) => {

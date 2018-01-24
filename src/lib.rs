@@ -22,3 +22,4 @@ pub mod service;
 pub mod schema;
 pub mod api;
 pub mod api_handler;
+pub mod controller;

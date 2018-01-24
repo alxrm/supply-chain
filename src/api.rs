@@ -1,28 +1,24 @@
 use serde::Serialize;
 use router::Router;
 use iron::prelude::*;
-use hyper::header::AccessControlAllowOrigin;
-use bodyparser;
-
+use iron::middleware::Handler;
 use std::collections::HashMap;
 
 use exonum::api::{Api, ApiError};
 use exonum::node::TransactionSend;
 use exonum::messages::Message;
-use exonum::crypto::{HexValue, PublicKey, Hash};
+use exonum::crypto::{PublicKey, Hash};
 use exonum::storage::{Fork, Snapshot, MapIndex, ListProof, ProofListIndex};
 use exonum::blockchain::{self, Blockchain, BlockProof, Schema};
-use exonum::encoding::serialize::json::reexport as serde_json;
 use exonum::helpers::Height;
-
-use self::serde_json::to_value;
 
 use super::transactions::BaseTransaction;
 use super::owner::Owner;
 use super::item::Item;
 use super::schema::SupplyChainSchema;
 use super::tx_metarecord::TxMetaRecord;
-use super::api_handler;
+use super::api_handler::ApiHandler;
+use super::controller::{Controller, ApiHolder};
 
 #[derive(Clone)]
 pub struct SupplyChainApi<T: TransactionSend + Clone> {
@@ -30,11 +26,6 @@ pub struct SupplyChainApi<T: TransactionSend + Clone> {
     pub blockchain: Blockchain,
     /// Channel for transactions.
     pub channel: T,
-}
-
-#[derive(Clone)]
-struct ApiHandler<T: TransactionSend + Clone> {
-    pub api: SupplyChainApi<T>,
 }
 
 #[derive(Debug, Serialize)]
@@ -51,12 +42,20 @@ pub struct AuditedEntityInfo<V: Serialize> {
 }
 
 #[derive(Serialize, Deserialize)]
-struct TxResponse {
-    tx_hash: Hash,
+pub struct TxResponse {
+    pub tx_hash: Hash,
+}
+
+struct ItemController;
+
+impl Controller<String, AuditedEntityInfo<Item>, ApiError> for ItemController {
+    fn process(&self, params: &String) -> Result<AuditedEntityInfo<Item>, ApiError> {
+        unimplemented!()
+    }
 }
 
 impl<T> SupplyChainApi<T> where T: TransactionSend + Clone {
-    fn owner(&self, pub_key: &PublicKey) -> Result<AuditedEntityInfo<Owner>, ApiError> {
+    pub fn owner(&self, pub_key: &PublicKey) -> Result<AuditedEntityInfo<Owner>, ApiError> {
         println!("/owners/{}", pub_key.to_string());
 
         let view = self.blockchain.snapshot();
@@ -87,7 +86,7 @@ impl<T> SupplyChainApi<T> where T: TransactionSend + Clone {
         Ok(res)
     }
 
-    fn item(&self, item_uid: &String) -> Result<AuditedEntityInfo<Item>, ApiError> {
+    pub fn item(&self, item_uid: &String) -> Result<AuditedEntityInfo<Item>, ApiError> {
         println!("/items/{}", item_uid);
 
         let view = self.blockchain.snapshot();
@@ -118,7 +117,7 @@ impl<T> SupplyChainApi<T> where T: TransactionSend + Clone {
         Ok(res)
     }
 
-    fn group(&self, group_id: &String) -> Result<HashMap<String, Item>, ApiError> {
+    pub fn group(&self, group_id: &String) -> Result<HashMap<String, Item>, ApiError> {
         println!("/groups/{}", group_id);
 
         let mut view = self.blockchain.fork();
@@ -133,7 +132,7 @@ impl<T> SupplyChainApi<T> where T: TransactionSend + Clone {
         Ok(res)
     }
 
-    fn items_by_owner(&self, pub_key: &PublicKey) -> Result<HashMap<String, Item>, ApiError> {
+    pub fn items_by_owner(&self, pub_key: &PublicKey) -> Result<HashMap<String, Item>, ApiError> {
         println!("/owner/{}/items", pub_key.to_string());
 
         let mut view = self.blockchain.fork();
@@ -154,7 +153,7 @@ impl<T> SupplyChainApi<T> where T: TransactionSend + Clone {
         Ok(res)
     }
 
-    fn post_transaction(&self, tx: BaseTransaction) -> Result<Hash, ApiError> {
+    pub fn post_transaction(&self, tx: BaseTransaction) -> Result<Hash, ApiError> {
         println!("/transaction");
 
         let tx_hash = tx.hash();
@@ -212,11 +211,14 @@ impl<T> Api for SupplyChainApi<T> where T: 'static + TransactionSend + Clone {
         let handler_clone = handler.clone();
         let owner_route = move |req: &mut Request| handler_clone.handle_owner(req);
 
+        let hc = handler.clone();
+
         router.post(&"/v1/transaction", transaction_route, "transaction");
         router.get(&"/v1/items/:uid", item_route, "item");
         router.get(&"/v1/groups/:groupId", group_route, "group");
         router.get(&"/v1/owners/:pubKey/items", items_by_owner_route, "items_by_owner");
         router.get(&"/v1/owners/:pubKey", owner_route, "owner");
+        router.get(&"/v1/test", hc, "test");
 
         println!("Wired API methods");
     }
