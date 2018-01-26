@@ -55,15 +55,15 @@ impl<T> ApiHandler<T> where T: 'static + TransactionSend + Clone {
         Ok(res)
     }
 
-    pub fn handle_item(&self, req: &mut Request) -> IronResult<Response> {
+    pub fn handle_product(&self, req: &mut Request) -> IronResult<Response> {
         let path = req.url.path();
-        let item_uid = path.last().unwrap().to_string();
+        let product_uid = path.last().unwrap().to_string();
         let api = &self.api;
-        let origin = match api.item(&item_uid) {
-            Ok(item) => api.ok_response(&to_value(item).unwrap()),
+        let origin = match api.product(&product_uid) {
+            Ok(product) => api.ok_response(&to_value(product).unwrap()),
             Err(e) => {
-                error!("Error in handle_item: {}", e);
-                api.not_found_response(&to_value("Item not found").unwrap())
+                error!("Error in handle_product: {}", e);
+                api.not_found_response(&to_value("Product not found").unwrap())
             }
         };
 
@@ -78,7 +78,7 @@ impl<T> ApiHandler<T> where T: 'static + TransactionSend + Clone {
         let group_id = path.last().unwrap().to_string();
         let api = &self.api;
         let origin = match api.group(&group_id) {
-            Ok(items) => api.ok_response(&to_value(items).unwrap()),
+            Ok(products) => api.ok_response(&to_value(products).unwrap()),
             Err(_) => {
                 api.not_found_response(&to_value("Group not found").unwrap())
             }
@@ -90,7 +90,7 @@ impl<T> ApiHandler<T> where T: 'static + TransactionSend + Clone {
         Ok(res)
     }
 
-    pub fn handle_items_by_owner(&self, req: &mut Request) -> IronResult<Response> {
+    pub fn handle_products_by_owner(&self, req: &mut Request) -> IronResult<Response> {
         let owner_key = req.extensions.get::<Router>().unwrap().find("pubKey");
         let api = &self.api;
         let public_key = match owner_key {
@@ -102,10 +102,10 @@ impl<T> ApiHandler<T> where T: 'static + TransactionSend + Clone {
             }
         };
 
-        let origin = match api.items_by_owner(&public_key) {
-            Ok(items) => api.ok_response(&to_value(items).unwrap()),
+        let origin = match api.products_by_owner(&public_key) {
+            Ok(products) => api.ok_response(&to_value(products).unwrap()),
             Err(e) => {
-                error!("Error in handle_items_by_owner: {}", e);
+                error!("Error in handle_products_by_owner: {}", e);
                 api.not_found_response(&to_value("Owner not found").unwrap())
             }
         };

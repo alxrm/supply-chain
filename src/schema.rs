@@ -3,15 +3,15 @@ use std::fmt;
 use exonum::crypto::{PublicKey, Hash};
 use exonum::storage::{Snapshot, Fork, ProofMapIndex, ProofListIndex, MapIndex};
 
-use super::item::Item;
+use super::product::Product;
 use super::owner::Owner;
 use super::tx_metarecord::TxMetaRecord;
 
 pub const OWNERS_TABLE: &str = "owners";
-pub const ITEMS_TABLE: &str = "items";
-pub const ITEMS_BY_OWNER_TABLE: &str = "items_by_owner";
+pub const PRODUCTS_TABLE: &str = "products";
+pub const PRODUCTS_BY_OWNER_TABLE: &str = "products_by_owner";
 pub const OWNER_HISTORY_TABLE: &str = "owner_history";
-pub const ITEM_HISTORY_TABLE: &str = "item_history";
+pub const PRODUCT_HISTORY_TABLE: &str = "product_history";
 
 /// Database schema for the supply chain.
 pub struct SupplyChainSchema<T> {
@@ -40,11 +40,11 @@ impl<T> SupplyChainSchema<T> where T: AsRef<Snapshot> {
         ProofMapIndex::new(OWNERS_TABLE, &self.view)
     }
 
-    pub fn items(&self) -> MapIndex<&T, String, Item> {
-        MapIndex::new(ITEMS_TABLE, &self.view)
+    pub fn products(&self) -> MapIndex<&T, String, Product> {
+        MapIndex::new(PRODUCTS_TABLE, &self.view)
     }
 
-    pub fn group(&self, group_id: &String) -> MapIndex<&T, String, Item> {
+    pub fn group(&self, group_id: &String) -> MapIndex<&T, String, Product> {
         MapIndex::new(group_id, &self.view)
     }
 
@@ -63,37 +63,37 @@ impl<'a> SupplyChainSchema<&'a mut Fork> {
         self.owners_mut().get(owner_key)
     }
 
-    pub fn items_mut(&mut self) -> MapIndex<&mut Fork, String, Item> {
-        MapIndex::new(ITEMS_TABLE, self.view)
+    pub fn products_mut(&mut self) -> MapIndex<&mut Fork, String, Product> {
+        MapIndex::new(PRODUCTS_TABLE, self.view)
     }
 
-    pub fn group_mut(&mut self, group_id: &String) -> MapIndex<&mut Fork, String, Item> {
+    pub fn group_mut(&mut self, group_id: &String) -> MapIndex<&mut Fork, String, Product> {
         MapIndex::new(group_id, self.view)
     }
 
-    pub fn item(&mut self, item_uid: &String) -> Option<Item> {
-        self.items_mut().get(item_uid)
+    pub fn product(&mut self, product_uid: &String) -> Option<Product> {
+        self.products_mut().get(product_uid)
     }
 
-    pub fn update_group(&mut self, items: &Vec<Item>, group_id: &String) {
+    pub fn update_group(&mut self, products: &Vec<Product>, group_id: &String) {
         let mut group = self.group_mut(group_id);
 
-        items.iter().for_each(|it| {
+        products.iter().for_each(|it| {
             group.put(&it.uid().to_string(), it.clone());
         });
     }
 
-    pub fn update_items(&mut self, items: &Vec<Item>) {
-        let mut items_map = self.items_mut();
+    pub fn update_products(&mut self, products: &Vec<Product>) {
+        let mut products_map = self.products_mut();
 
-        items.iter().for_each(|it| {
-            items_map.put(&it.uid().to_string(), it.clone())
+        products.iter().for_each(|it| {
+            products_map.put(&it.uid().to_string(), it.clone())
         });
     }
 
-    pub fn item_history(&mut self, item_uid: &String)
+    pub fn product_history(&mut self, product_uid: &String)
                         -> ProofListIndex<&mut Fork, TxMetaRecord> {
-        ProofListIndex::new(item_uid, self.view)
+        ProofListIndex::new(product_uid, self.view)
     }
 
     pub fn owner_history(&mut self, owner_key: &PublicKey)
@@ -107,10 +107,10 @@ impl<'a> SupplyChainSchema<&'a mut Fork> {
         owner.grow_length_set_history_hash(&history.root_hash());
     }
 
-    pub fn append_item_history(&mut self, item: &mut Item, meta: &TxMetaRecord) {
-        let item_uid = item.uid().to_string();
-        let mut history = self.item_history(&item_uid);
+    pub fn append_product_history(&mut self, product: &mut Product, meta: &TxMetaRecord) {
+        let product_uid = product.uid().to_string();
+        let mut history = self.product_history(&product_uid);
         history.push(meta.clone());
-        item.grow_length_set_history_hash(&history.root_hash());
+        product.grow_length_set_history_hash(&history.root_hash());
     }
 }

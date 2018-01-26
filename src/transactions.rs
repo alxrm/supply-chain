@@ -7,12 +7,12 @@ use exonum::encoding::Error as StreamStructError;
 
 use super::schema::SupplyChainSchema;
 use super::service::SUPPLY_CHAIN_SERVICE_ID;
-use super::item::Item;
+use super::product::Product;
 use super::owner::Owner;
 use super::tx_metarecord::TxMetaRecord;
 
 pub const TX_CREATE_OWNER_ID: u16 = 128;
-pub const TX_ADD_ITEM_ID: u16 = 129;
+pub const TX_ADD_PRODUCT_ID: u16 = 129;
 pub const TX_ATTACH_TO_GROUP_ID: u16 = 130;
 pub const TX_SEND_GROUP_ID: u16 = 131;
 pub const TX_RECEIVE_GROUP_ID: u16 = 132;
@@ -30,13 +30,13 @@ message! {
 }
 
 message! {
-    struct TxAddItem {
+    struct TxAddProduct {
         const TYPE = SUPPLY_CHAIN_SERVICE_ID;
-        const ID = TX_ADD_ITEM_ID;
+        const ID = TX_ADD_PRODUCT_ID;
         const SIZE = 56;
 
         field owner:       &PublicKey      [00 => 32]
-        field item_uid:    &str            [32 => 40]
+        field product_uid:    &str            [32 => 40]
         field name:        &str            [40 => 48]
         field seed:        u64             [48 => 56]
     }
@@ -49,7 +49,7 @@ message! {
         const SIZE = 56;
 
         field owner:      &PublicKey [00 => 32]
-        field item_uid:   &str       [32 => 40]
+        field product_uid:   &str       [32 => 40]
         field group:      &str       [40 => 48]
         field seed:       u64        [48 => 56]
     }
@@ -85,7 +85,7 @@ message! {
 pub enum BaseTransaction {
     CreateOwner(TxCreateOwner),
 
-    AddItem(TxAddItem),
+    AddProduct(TxAddProduct),
 
     AttachToGroup(TxAttachToGroup),
 
@@ -99,7 +99,7 @@ impl BaseTransaction {
     pub fn pub_key(&self) -> &PublicKey {
         match *self {
             BaseTransaction::CreateOwner(ref msg) => msg.pub_key(),
-            BaseTransaction::AddItem(ref msg) => msg.owner(),
+            BaseTransaction::AddProduct(ref msg) => msg.owner(),
             BaseTransaction::AttachToGroup(ref msg) => msg.owner(),
             BaseTransaction::SendGroup(ref msg) => msg.prev_owner(),
             BaseTransaction::ReceiveGroup(ref msg) => msg.next_owner(),
@@ -111,7 +111,7 @@ impl Message for BaseTransaction {
     fn raw(&self) -> &RawMessage {
         match *self {
             BaseTransaction::CreateOwner(ref msg) => msg.raw(),
-            BaseTransaction::AddItem(ref msg) => msg.raw(),
+            BaseTransaction::AddProduct(ref msg) => msg.raw(),
             BaseTransaction::AttachToGroup(ref msg) => msg.raw(),
             BaseTransaction::SendGroup(ref msg) => msg.raw(),
             BaseTransaction::ReceiveGroup(ref msg) => msg.raw(),
@@ -123,7 +123,7 @@ impl FromRaw for BaseTransaction {
     fn from_raw(raw: RawMessage) -> Result<Self, StreamStructError> {
         match raw.message_type() {
             TX_CREATE_OWNER_ID => Ok(BaseTransaction::CreateOwner(TxCreateOwner::from_raw(raw)?)),
-            TX_ADD_ITEM_ID => Ok(BaseTransaction::AddItem(TxAddItem::from_raw(raw)?)),
+            TX_ADD_PRODUCT_ID => Ok(BaseTransaction::AddProduct(TxAddProduct::from_raw(raw)?)),
             TX_ATTACH_TO_GROUP_ID => Ok(BaseTransaction::AttachToGroup(TxAttachToGroup::from_raw(raw)?)),
             TX_SEND_GROUP_ID => Ok(BaseTransaction::SendGroup(TxSendGroup::from_raw(raw)?)),
             TX_RECEIVE_GROUP_ID => Ok(BaseTransaction::ReceiveGroup(TxReceiveGroup::from_raw(raw)?)),
@@ -140,9 +140,9 @@ impl From<TxCreateOwner> for BaseTransaction {
     }
 }
 
-impl From<TxAddItem> for BaseTransaction {
-    fn from(tx: TxAddItem) -> BaseTransaction {
-        BaseTransaction::AddItem(tx)
+impl From<TxAddProduct> for BaseTransaction {
+    fn from(tx: TxAddProduct) -> BaseTransaction {
+        BaseTransaction::AddProduct(tx)
     }
 }
 
@@ -175,7 +175,7 @@ impl Transaction for BaseTransaction {
         let is_valid_signature = self.verify_signature(self.pub_key());
         let is_valid_content = match *self {
             BaseTransaction::CreateOwner(ref msg) => msg.verify(),
-            BaseTransaction::AddItem(ref msg) => msg.verify(),
+            BaseTransaction::AddProduct(ref msg) => msg.verify(),
             BaseTransaction::AttachToGroup(ref msg) => msg.verify(),
             BaseTransaction::SendGroup(ref msg) => msg.verify(),
             BaseTransaction::ReceiveGroup(ref msg) => msg.verify(),
@@ -188,7 +188,7 @@ impl Transaction for BaseTransaction {
         let tx_hash = Message::hash(self);
         match *self {
             BaseTransaction::CreateOwner(ref msg) => msg.execute(view, tx_hash),
-            BaseTransaction::AddItem(ref msg) => msg.execute(view, tx_hash),
+            BaseTransaction::AddProduct(ref msg) => msg.execute(view, tx_hash),
             BaseTransaction::AttachToGroup(ref msg) => msg.execute(view, tx_hash),
             BaseTransaction::SendGroup(ref msg) => msg.execute(view, tx_hash),
             BaseTransaction::ReceiveGroup(ref msg) => msg.execute(view, tx_hash),
@@ -233,17 +233,17 @@ impl TxCreateOwner {
     }
 }
 
-impl TxAddItem {
+impl TxAddProduct {
     fn verify(&self) -> bool {
         let is_valid_name = self.name() != "";
-        let is_valid_uid = self.item_uid() != "";
+        let is_valid_uid = self.product_uid() != "";
 
         is_valid_name && is_valid_uid
     }
 
     fn execute(&self, fork: &mut Fork, tx_hash: Hash) {
         let mut schema = SupplyChainSchema::new(fork);
-        let item_uid = self.item_uid().to_string();
+        let product_uid = self.product_uid().to_string();
 
         let mut owner = match schema.owner(self.owner()) {
             Some(own) => own,
@@ -252,40 +252,40 @@ impl TxAddItem {
             }
         };
 
-        let found_item = schema.item(&item_uid);
-        let status = found_item.is_none();
+        let found_product = schema.product(&product_uid);
+        let status = found_product.is_none();
         let transaction_meta = TxMetaRecord::new(&tx_hash, status, Utc::now().timestamp());
 
-        let result_item = {
-            let mut item_history = schema.item_history(&item_uid);
-            item_history.push(transaction_meta.clone());
+        let result_product = {
+            let mut product_history = schema.product_history(&product_uid);
+            product_history.push(transaction_meta.clone());
 
-            match found_item {
+            match found_product {
                 Some(mut it) => {
-                    it.grow_length_set_history_hash(&item_history.root_hash());
+                    it.grow_length_set_history_hash(&product_history.root_hash());
                     it
                 }
-                None => Item::new(
+                None => Product::new(
                     self.owner(),
                     self.name(),
-                    self.item_uid(),
+                    self.product_uid(),
                     "",
                     false,
                     1,
-                    &item_history.root_hash()
+                    &product_history.root_hash()
                 )
             }
         };
 
         schema.append_owner_history(&mut owner, &transaction_meta);
         schema.owners_mut().put(self.owner(), owner);
-        schema.items_mut().put(&item_uid, result_item)
+        schema.products_mut().put(&product_uid, result_product)
     }
 }
 
 impl TxAttachToGroup {
     fn verify(&self) -> bool {
-        let is_valid_uid = self.item_uid() != "";
+        let is_valid_uid = self.product_uid() != "";
         let is_valid_group = self.group() != "";
 
         is_valid_uid && is_valid_group
@@ -293,7 +293,7 @@ impl TxAttachToGroup {
 
     fn execute(&self, fork: &mut Fork, tx_hash: Hash) {
         let mut schema = SupplyChainSchema::new(fork);
-        let item_uid = String::from(self.item_uid());
+        let product_uid = String::from(self.product_uid());
 
         let mut owner = match schema.owner(self.owner()) {
             Some(own) => own,
@@ -302,29 +302,29 @@ impl TxAttachToGroup {
             }
         };
 
-        let mut item = match schema.item(&item_uid) {
+        let mut product = match schema.product(&product_uid) {
             Some(it) => it,
             None => {
                 return;
             }
         };
 
-        let prev_group_id = String::from(item.group_id());
+        let prev_group_id = String::from(product.group_id());
         let next_group_id = String::from(self.group());
 
         if prev_group_id != "" {
-            schema.group_mut(&prev_group_id).remove(&item_uid);
+            schema.group_mut(&prev_group_id).remove(&product_uid);
         }
 
-        let status = item.attach_to_group(next_group_id.as_str());
+        let status = product.attach_to_group(next_group_id.as_str());
         let transaction_meta = TxMetaRecord::new(&tx_hash, status, Utc::now().timestamp());
 
         schema.append_owner_history(&mut owner, &transaction_meta);
         schema.owners_mut().put(self.owner(), owner);
 
-        schema.append_item_history(&mut item, &transaction_meta);
-        schema.group_mut(&next_group_id).put(&item_uid, item.clone());
-        schema.items_mut().put(&item_uid, item);
+        schema.append_product_history(&mut product, &transaction_meta);
+        schema.group_mut(&next_group_id).put(&product_uid, product.clone());
+        schema.products_mut().put(&product_uid, product);
     }
 }
 
@@ -345,22 +345,22 @@ impl TxSendGroup {
             }
         };
 
-        let mut items_grouped = {
+        let mut products_grouped = {
             let group = schema.group(&group_id);
-            let items = group.values().collect::<Vec<Item>>();
+            let products = group.values().collect::<Vec<Product>>();
 
-            items
+            products
         };
 
-        for item in &mut items_grouped {
-            let status = item.set_transferring(true);
+        for product in &mut products_grouped {
+            let status = product.set_transferring(true);
             let meta = TxMetaRecord::new(&tx_hash, status, Utc::now().timestamp());
 
-            schema.append_item_history(item, &meta);
+            schema.append_product_history(product, &meta);
         }
 
-        schema.update_group(&items_grouped, &group_id);
-        schema.update_items(&items_grouped);
+        schema.update_group(&products_grouped, &group_id);
+        schema.update_products(&products_grouped);
 
         schema.append_owner_history(&mut prev_owner, &success_record);
         schema.owners_mut().put(self.prev_owner(), prev_owner);
@@ -384,24 +384,24 @@ impl TxReceiveGroup {
             }
         };
 
-        let mut items_grouped = {
+        let mut products_grouped = {
             let group = schema.group(&group_id);
-            let items = group.values().collect::<Vec<Item>>();
+            let products = group.values().collect::<Vec<Product>>();
 
-            items
+            products
         };
 
-        for item in &mut items_grouped {
-            let finished_transfer = item.set_transferring(false);
-            let changed_owner = item.change_owner(&next_owner);
+        for product in &mut products_grouped {
+            let finished_transfer = product.set_transferring(false);
+            let changed_owner = product.change_owner(&next_owner);
             let status = finished_transfer && changed_owner;
             let meta = TxMetaRecord::new(&tx_hash, status, Utc::now().timestamp());
 
-            schema.append_item_history(item, &meta);
+            schema.append_product_history(product, &meta);
         }
 
-        schema.update_group(&items_grouped, &group_id);
-        schema.update_items(&items_grouped);
+        schema.update_group(&products_grouped, &group_id);
+        schema.update_products(&products_grouped);
 
         schema.append_owner_history(&mut next_owner, &success_record);
         schema.owners_mut().put(self.next_owner(), next_owner);

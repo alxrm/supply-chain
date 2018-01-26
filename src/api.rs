@@ -14,7 +14,7 @@ use exonum::helpers::Height;
 
 use super::transactions::BaseTransaction;
 use super::owner::Owner;
-use super::item::Item;
+use super::product::Product;
 use super::schema::SupplyChainSchema;
 use super::tx_metarecord::TxMetaRecord;
 use super::api_handler::ApiHandler;
@@ -46,10 +46,10 @@ pub struct TxResponse {
     pub tx_hash: Hash,
 }
 
-struct ItemController;
+struct ProductController;
 
-impl Controller<String, AuditedEntityInfo<Item>, ApiError> for ItemController {
-    fn process(&self, params: &String) -> Result<AuditedEntityInfo<Item>, ApiError> {
+impl Controller<String, AuditedEntityInfo<Product>, ApiError> for ProductController {
+    fn process(&self, params: &String) -> Result<AuditedEntityInfo<Product>, ApiError> {
         unimplemented!()
     }
 }
@@ -86,8 +86,8 @@ impl<T> SupplyChainApi<T> where T: TransactionSend + Clone {
         Ok(res)
     }
 
-    pub fn item(&self, item_uid: &String) -> Result<AuditedEntityInfo<Item>, ApiError> {
-        println!("/items/{}", item_uid);
+    pub fn product(&self, product_uid: &String) -> Result<AuditedEntityInfo<Product>, ApiError> {
+        println!("/products/{}", product_uid);
 
         let view = self.blockchain.snapshot();
         let general_schema = blockchain::Schema::new(&view);
@@ -98,53 +98,53 @@ impl<T> SupplyChainApi<T> where T: TransactionSend + Clone {
         let max_height = Height(general_schema.block_hashes_by_height().len()).previous();
         let block_proof = general_schema.block_and_precommits(max_height).unwrap();
 
-        let item = match schema.item(item_uid) {
+        let product = match schema.product(product_uid) {
             Some(it) => it,
             None => {
                 return Err(ApiError::NotFound);
             }
         };
 
-        let history_raw = schema.item_history(item_uid);
-        let item_history = self.collect_history(history_raw, &general_schema);
+        let history_raw = schema.product_history(product_uid);
+        let product_history = self.collect_history(history_raw, &general_schema);
 
         let res = AuditedEntityInfo {
             block_info: block_proof,
-            data: item,
-            history: item_history,
+            data: product,
+            history: product_history,
         };
 
         Ok(res)
     }
 
-    pub fn group(&self, group_id: &String) -> Result<HashMap<String, Item>, ApiError> {
+    pub fn group(&self, group_id: &String) -> Result<HashMap<String, Product>, ApiError> {
         println!("/groups/{}", group_id);
 
         let mut view = self.blockchain.fork();
         let mut schema = SupplyChainSchema::new(&mut view);
-        let group_items: MapIndex<&mut Fork, String, Item> = schema.group_mut(group_id);
-        let mut res = HashMap::with_capacity(group_items.values().count());
+        let group_products: MapIndex<&mut Fork, String, Product> = schema.group_mut(group_id);
+        let mut res = HashMap::with_capacity(group_products.values().count());
 
-        group_items.iter().for_each(|pair| {
+        group_products.iter().for_each(|pair| {
             res.insert(pair.0, pair.1);
         });
 
         Ok(res)
     }
 
-    pub fn items_by_owner(&self, pub_key: &PublicKey) -> Result<HashMap<String, Item>, ApiError> {
-        println!("/owner/{}/items", pub_key.to_string());
+    pub fn products_by_owner(&self, pub_key: &PublicKey) -> Result<HashMap<String, Product>, ApiError> {
+        println!("/owner/{}/products", pub_key.to_string());
 
         let mut view = self.blockchain.fork();
         let mut schema = SupplyChainSchema::new(&mut view);
-        let all_items: MapIndex<&mut Fork, String, Item> = schema.items_mut();
-        let mut res = HashMap::with_capacity(all_items.values().count());
+        let all_products: MapIndex<&mut Fork, String, Product> = schema.products_mut();
+        let mut res = HashMap::with_capacity(all_products.values().count());
 
-        all_items.iter()
+        all_products.iter()
             .filter(|pair| {
-                let item = &pair.1;
+                let product = &pair.1;
 
-                item.owner_key() == pub_key
+                product.owner_key() == pub_key
             })
             .for_each(|pair| {
                 res.insert(pair.0, pair.1);
@@ -200,10 +200,10 @@ impl<T> Api for SupplyChainApi<T> where T: 'static + TransactionSend + Clone {
         let transaction_route = move |req: &mut Request| handler_clone.handle_post_transaction(req);
 
         let handler_clone = handler.clone();
-        let item_route = move |req: &mut Request| handler_clone.handle_item(req);
+        let product_route = move |req: &mut Request| handler_clone.handle_product(req);
 
         let handler_clone = handler.clone();
-        let items_by_owner_route = move |req: &mut Request| handler_clone.handle_items_by_owner(req);
+        let products_by_owner_route = move |req: &mut Request| handler_clone.handle_products_by_owner(req);
 
         let handler_clone = handler.clone();
         let group_route = move |req: &mut Request| handler_clone.handle_group(req);
@@ -214,9 +214,9 @@ impl<T> Api for SupplyChainApi<T> where T: 'static + TransactionSend + Clone {
         let hc = handler.clone();
 
         router.post(&"/v1/transaction", transaction_route, "transaction");
-        router.get(&"/v1/items/:uid", item_route, "item");
+        router.get(&"/v1/products/:uid", product_route, "product");
         router.get(&"/v1/groups/:groupId", group_route, "group");
-        router.get(&"/v1/owners/:pubKey/items", items_by_owner_route, "items_by_owner");
+        router.get(&"/v1/owners/:pubKey/products", products_by_owner_route, "products_by_owner");
         router.get(&"/v1/owners/:pubKey", owner_route, "owner");
         router.get(&"/v1/test", hc, "test");
 

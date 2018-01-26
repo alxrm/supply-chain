@@ -4,7 +4,7 @@ use exonum::crypto::{PublicKey, Hash};
 use super::owner::Owner;
 
 encoding_struct! {
-    struct Item {
+    struct Product {
         const SIZE = 97;
 
         field owner_key:              &PublicKey  [00 => 32]
@@ -17,7 +17,7 @@ encoding_struct! {
     }
 }
 
-impl Item {
+impl Product {
     pub fn change_owner(&mut self, next_owner: &Owner) -> bool {
         if next_owner.pub_key() == self.owner_key() {
             return false;

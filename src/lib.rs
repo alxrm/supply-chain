@@ -15,7 +15,7 @@ extern crate bodyparser;
 extern crate chrono;
 
 pub mod owner;
-pub mod item;
+pub mod product;
 pub mod tx_metarecord;
 pub mod transactions;
 pub mod service;
