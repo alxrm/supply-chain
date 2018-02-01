@@ -4,31 +4,31 @@ import { Checkbox } from 'react-bootstrap';
 
 import connectWithDispatch from '../../utils/connectWithDispatch';
 
-const ItemCard = styled.div`
+const ProductCard = styled.div`
   background-color: black;
   color: whitesmoke;
   padding: 32px;
   margin: 12px 0;
 `;
 
-class ItemList extends Component {
+class ProductList extends Component {
   constructor(props) {
     super(props);
-    const { ownerItemsByKey, publicKey } = props;
+    const { ownerProductsByKey, publicKey } = props;
 
-    ownerItemsByKey(publicKey);
+    ownerProductsByKey(publicKey);
   }
 
   render() {
-    const { items } = this.props;
+    const { products } = this.props;
 
     return (
       <div>
-        {Object.keys(items).map(it =>
-          <ItemCard key={it}>
-            <div>Item: {items[it].name}</div>
+        {Object.keys(products).map(it =>
+          <ProductCard key={it}>
+            <div>Product: {products[it].name}</div>
             <Checkbox/>
-          </ItemCard>
+          </ProductCard>
         )}
       </div>
     );
@@ -37,6 +37,6 @@ class ItemList extends Component {
 
 export default connectWithDispatch(state => ({
   publicKey: state.auth.user.publicKey,
-  items: state.ownerItems.items,
-  error: state.ownerItems.error,
-}))(ItemList);
+  products: state.ownerProducts.products,
+  error: state.ownerProducts.error,
+}))(ProductList);

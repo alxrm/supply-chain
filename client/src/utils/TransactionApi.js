@@ -3,7 +3,7 @@ import request from 'superagent';
 
 import {SERVICE_URL} from '../constants/configs';
 import {
-  TxAddItem,
+  TxAddProduct,
   TxAttachToGroup,
   TxCreateOwner,
   TxReceiveGroup,
@@ -36,16 +36,16 @@ const postTransaction = (transactionType, params, secret) => {
 };
 
 export const TransactionApi = {
-  async addItem(itemUid, name, user) {
-    return await postTransaction(TxAddItem, { owner: user.publicKey, item_uid: itemUid, name }, user.secretKey);
+  async addProduct(productUid, name, user) {
+    return await postTransaction(TxAddProduct, { owner: user.publicKey, product_uid: productUid, name }, user.secretKey);
   },
 
   async createOwner(name, user) {
     return await postTransaction(TxCreateOwner, { pub_key: user.publicKey, name }, user.secretKey);
   },
 
-  async attachToGroup(itemUid, group, user) {
-    return await postTransaction(TxAttachToGroup, { owner: user.publicKey, item_uid: itemUid, group }, user.secretKey);
+  async attachToGroup(productUid, group, user) {
+    return await postTransaction(TxAttachToGroup, { owner: user.publicKey, product_uid: productUid, group }, user.secretKey);
   },
 
   async sendGroup(group, user) {

@@ -20,16 +20,16 @@ export const DataApi = {
     return await get(`owners/${publicKey}`);
   },
 
-  async ownerItems(publicKey) {
-    return await get(`owners/${publicKey}/items`);
+  async ownerproducts(publicKey) {
+    return await get(`owners/${publicKey}/products`);
   },
 
   async group(groupId) {
     return await get(`groups/${groupId}`);
   },
 
-  async item(itemId) {
-    return await get(`items/${itemId}`);
+  async product(productId) {
+    return await get(`products/${productId}`);
   }
 };
 

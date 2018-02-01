@@ -49,13 +49,25 @@ const renderKeysFields = (isKeyPairCreated, publicKey, secretKey) => {
   );
 };
 
+const renderErrorMessage = (name) => {
+  if (!name) {
+    return <span>Name is required</span>
+  }
+
+  return <span>Server error occurred</span>
+};
+
+const renderSuccessMessage = () => (
+  <span>Please keep these keys safe</span>
+);
+
 const Signup = ({ login, signup, error, name, publicKey, secretKey, changeFormField, isKeyPairCreated }) => (
   <CenteringContainer>
     <AuthForm>
       <FormTitle>Create new account</FormTitle>
       <Fade in={isKeyPairCreated || error}>
         <FormCaption success={isKeyPairCreated} error={error}>
-          {error ? 'Name is required' : 'Please keep these keys safe'}
+          {error ? renderErrorMessage(name) : renderSuccessMessage()}
         </FormCaption>
       </Fade>
       <AuthInput

@@ -10,10 +10,10 @@ import Header from './Layout/Header';
 import Content from './Layout/Content';
 import Login from './Auth';
 import Signup from './Auth/Signup';
-import Item from './Item';
+import Product from './Product';
 import Receive from './Receive';
 import Owner from './Owner';
-import ItemList from './ItemList';
+import ProductList from './ProductList';
 
 const renderAuthorized = () => (
   <div>
@@ -21,8 +21,8 @@ const renderAuthorized = () => (
     <Content>
       <Switch>
         <Route path="/" component={Owner} exact />
-        <Route path="/items/:uid" component={Item} />
-        <Route path="/items" component={ItemList} />
+        <Route path="/products/:uid" component={Product} />
+        <Route path="/products" component={ProductList} />
         <Route path="/receive" component={Receive} />
         <Redirect from="**" to="/" />
       </Switch>

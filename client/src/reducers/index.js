@@ -1,10 +1,10 @@
 import {combineReducers} from 'redux';
 import owner from './ownerReducers';
-import ownerItems from './onwerItemsReducers';
+import ownerProducts from './onwerProductsReducers';
 import auth from './authReducers';
 
 export const reducers = combineReducers({
-  owner, ownerItems, auth
+  owner, ownerProducts, auth
 });
 
 export default reducers;
