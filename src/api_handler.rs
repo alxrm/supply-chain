@@ -21,14 +21,6 @@ pub struct ApiHandler<T: TransactionSend + Clone> {
     pub api: SupplyChainApi<T>,
 }
 
-impl<T> Handler for ApiHandler<T> where T: 'static + TransactionSend + Clone {
-    fn handle(&self, _: &mut Request) -> IronResult<Response> {
-        let res = self.api.ok_response(&to_value("Test!").unwrap()).unwrap();
-
-        Ok(res)
-    }
-}
-
 impl<T> ApiHandler<T> where T: 'static + TransactionSend + Clone {
     pub fn new(api: SupplyChainApi<T>) -> Self {
         ApiHandler {

@@ -1,4 +1,3 @@
-use chrono::Utc;
 use exonum::crypto::{PublicKey, Hash};
 use exonum::blockchain::Transaction;
 use exonum::messages::{RawMessage, FromRaw, Message};
@@ -207,7 +206,7 @@ impl TxCreateOwner {
         let found_owner = schema.owner(key);
 
         let status = found_owner.is_none();
-        let meta = TxMetaRecord::new(&tx_hash, status, Utc::now().timestamp());
+        let meta = TxMetaRecord::new(&tx_hash, status);
 
         let owner = {
             let mut history = schema.owner_history(self.pub_key());
@@ -254,7 +253,7 @@ impl TxAddProduct {
 
         let found_product = schema.product(&product_uid);
         let status = found_product.is_none();
-        let transaction_meta = TxMetaRecord::new(&tx_hash, status, Utc::now().timestamp());
+        let transaction_meta = TxMetaRecord::new(&tx_hash, status);
 
         let result_product = {
             let mut product_history = schema.product_history(&product_uid);
@@ -317,7 +316,7 @@ impl TxAttachToGroup {
         }
 
         let status = product.attach_to_group(next_group_id.as_str());
-        let transaction_meta = TxMetaRecord::new(&tx_hash, status, Utc::now().timestamp());
+        let transaction_meta = TxMetaRecord::new(&tx_hash, status);
 
         schema.append_owner_history(&mut owner, &transaction_meta);
         schema.owners_mut().put(self.owner(), owner);
@@ -336,7 +335,7 @@ impl TxSendGroup {
     fn execute(&self, fork: &mut Fork, tx_hash: Hash) {
         let mut schema = SupplyChainSchema::new(fork);
         let group_id = self.group().to_string();
-        let success_record = TxMetaRecord::new(&tx_hash, true, Utc::now().timestamp());
+        let success_record = TxMetaRecord::new(&tx_hash, true);
 
         let mut prev_owner = match schema.owner(self.prev_owner()) {
             Some(own) => own,
@@ -354,7 +353,7 @@ impl TxSendGroup {
 
         for product in &mut products_grouped {
             let status = product.set_transferring(true);
-            let meta = TxMetaRecord::new(&tx_hash, status, Utc::now().timestamp());
+            let meta = TxMetaRecord::new(&tx_hash, status);
 
             schema.append_product_history(product, &meta);
         }
@@ -375,7 +374,7 @@ impl TxReceiveGroup {
     fn execute(&self, fork: &mut Fork, tx_hash: Hash) {
         let mut schema = SupplyChainSchema::new(fork);
         let group_id = self.group().to_string();
-        let success_record = TxMetaRecord::new(&tx_hash, true, Utc::now().timestamp());
+        let success_record = TxMetaRecord::new(&tx_hash, true);
 
         let mut next_owner = match schema.owner(self.next_owner()) {
             Some(own) => own,
@@ -395,7 +394,7 @@ impl TxReceiveGroup {
             let finished_transfer = product.set_transferring(false);
             let changed_owner = product.change_owner(&next_owner);
             let status = finished_transfer && changed_owner;
-            let meta = TxMetaRecord::new(&tx_hash, status, Utc::now().timestamp());
+            let meta = TxMetaRecord::new(&tx_hash, status);
 
             schema.append_product_history(product, &meta);
         }

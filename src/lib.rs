@@ -12,7 +12,6 @@ extern crate router;
 extern crate iron;
 extern crate hyper;
 extern crate bodyparser;
-extern crate chrono;
 
 pub mod owner;
 pub mod product;
@@ -21,5 +20,5 @@ pub mod transactions;
 pub mod service;
 pub mod schema;
 pub mod api;
-pub mod api_handler;
+pub mod handler;
 pub mod controller;
