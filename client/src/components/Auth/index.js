@@ -1,6 +1,6 @@
 import React from 'react';
 import {LinkContainer} from 'react-router-bootstrap';
-import {Fade} from "react-bootstrap";
+import {Fade} from 'react-bootstrap';
 
 import connectWithDispatch from '../../utils/connectWithDispatch';
 
