@@ -25,21 +25,21 @@ impl SupplyChainService {
 }
 
 impl Service for SupplyChainService {
-    fn service_name(&self) -> &'static str {
-        "supply-chain"
-    }
-
     fn service_id(&self) -> u16 {
         SUPPLY_CHAIN_SERVICE_ID
     }
 
-    fn tx_from_raw(&self, raw: RawTransaction) -> Result<Box<Transaction>, StreamStructError> {
-        BaseTransaction::from_raw(raw).map(|tx| Box::new(tx) as Box<Transaction>)
+    fn service_name(&self) -> &'static str {
+        "supply-chain"
     }
 
     fn state_hash(&self, view: &Snapshot) -> Vec<Hash> {
         let schema = SupplyChainSchema::new(view);
         schema.state_hash()
+    }
+
+    fn tx_from_raw(&self, raw: RawTransaction) -> Result<Box<Transaction>, StreamStructError> {
+        BaseTransaction::from_raw(raw).map(|tx| Box::new(tx) as Box<Transaction>)
     }
 
     fn public_api_handler(&self, ctx: &ApiContext) -> Option<Box<Handler>> {
