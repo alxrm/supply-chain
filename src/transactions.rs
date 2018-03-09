@@ -35,7 +35,7 @@ message! {
         const SIZE = 56;
 
         field owner:       &PublicKey      [00 => 32]
-        field product_uid:    &str            [32 => 40]
+        field product_uid: &str            [32 => 40]
         field name:        &str            [40 => 48]
         field seed:        u64             [48 => 56]
     }
@@ -251,7 +251,7 @@ impl TxAddProduct {
             }
         };
 
-        let found_product = schema.product(&product_uid);
+        let found_product = schema.product_mut(&product_uid);
         let status = found_product.is_none();
         let transaction_meta = TxMetaRecord::new(&tx_hash, status);
 
@@ -301,7 +301,7 @@ impl TxAttachToGroup {
             }
         };
 
-        let mut product = match schema.product(&product_uid) {
+        let mut product = match schema.product_mut(&product_uid) {
             Some(it) => it,
             None => {
                 return;

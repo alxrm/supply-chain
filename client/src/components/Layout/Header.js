@@ -13,6 +13,9 @@ const Header = ({ logout }) => (
     </Navbar.Header>
     <Navbar.Collapse>
       <Nav>
+        <LinkContainer to="/owner">
+          <NavItem>Owner</NavItem>
+        </LinkContainer>
         <LinkContainer to="/products">
           <NavItem>Products</NavItem>
         </LinkContainer>

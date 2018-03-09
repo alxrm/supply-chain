@@ -31,7 +31,7 @@ impl BaseController<String, AuditedEntityInfo<Product>, ApiError> for ProductCon
         let max_height = Height(general_schema.block_hashes_by_height().len()).previous();
         let block_proof = general_schema.block_and_precommits(max_height).unwrap();
 
-        let product = match schema.product(product_uid.as_ref()) {
+        let product = match schema.product_mut(product_uid.as_ref()) {
             Some(it) => it,
             None => {
                 return Err(ApiError::NotFound);

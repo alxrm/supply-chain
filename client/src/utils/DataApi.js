@@ -20,7 +20,7 @@ export const DataApi = {
     return await get(`owners/${publicKey}`);
   },
 
-  async ownerproducts(publicKey) {
+  async ownerProducts(publicKey) {
     return await get(`owners/${publicKey}/products`);
   },
 

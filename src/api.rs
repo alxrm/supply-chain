@@ -50,7 +50,7 @@ impl<T> Api for SupplyChainApi<T> where T: 'static + TransactionSend + Clone {
         );
 
         let transaction_handler = TransactionHandler::new(
-            self.clone(), TransactionController::new(self.clone().channel),
+            self.clone(), TransactionController::new(self.clone().channel, self.clone().blockchain),
         );
 
         router.post(&"/v1/transaction", transaction_handler, "transaction");

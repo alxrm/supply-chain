@@ -44,6 +44,10 @@ impl<T> SupplyChainSchema<T> where T: AsRef<Snapshot> {
         MapIndex::new(PRODUCTS_TABLE, &self.view)
     }
 
+    pub fn product(&self, product_uid: &String) -> Option<Product> {
+        self.products().get(product_uid)
+    }
+
     pub fn group(&self, group_id: &String) -> MapIndex<&T, String, Product> {
         MapIndex::new(group_id, &self.view)
     }
@@ -71,7 +75,7 @@ impl<'a> SupplyChainSchema<&'a mut Fork> {
         MapIndex::new(group_id, self.view)
     }
 
-    pub fn product(&mut self, product_uid: &String) -> Option<Product> {
+    pub fn product_mut(&mut self, product_uid: &String) -> Option<Product> {
         self.products_mut().get(product_uid)
     }
 

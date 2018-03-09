@@ -20,10 +20,11 @@ const renderAuthorized = () => (
     <Header />
     <Content>
       <Switch>
-        <Route path="/" component={Owner} exact />
+        <Route path="/owner" component={Owner} exact />
         <Route path="/products/:uid" component={Product} />
         <Route path="/products" component={ProductList} />
         <Route path="/receive" component={Receive} />
+        <Redirect from="/" to="/owner" />
         <Redirect from="**" to="/" />
       </Switch>
     </Content>

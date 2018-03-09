@@ -1,7 +1,10 @@
+extern crate exonum;
+
 use api::{SupplyChainApi, TxResponse};
 use bodyparser;
 use controller::BaseController;
 use exonum::api::{Api, ApiError};
+use exonum::api::ApiError::IncorrectRequest;
 use exonum::encoding::serialize::json::reexport as serde_json;
 use exonum::node::TransactionSend;
 use hyper::header::AccessControlAllowOrigin;
@@ -39,8 +42,8 @@ impl<T, C> Handler for TransactionHandler<T, C>
                 let tx_response = self.controller.process(Box::new(transaction))?;
                 api.ok_response(&to_value(tx_response).unwrap())
             }
-            Ok(None) => Err(ApiError::IncorrectRequest("Empty request body".into()))?,
-            Err(e) => Err(ApiError::IncorrectRequest(Box::new(e)))?,
+            Ok(None) => Err(IncorrectRequest("Empty request body".into()))?,
+            Err(e) => Err(IncorrectRequest(Box::new(e)))?,
         };
 
         let mut res = origin.unwrap();
