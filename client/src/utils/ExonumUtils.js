@@ -1,9 +1,9 @@
 import {keyPair, sign, verifySignature} from 'exonum-client';
 import times from 'lodash.times';
 import random from 'lodash.random';
-
 import FileUtils from './FileUtils';
-import { FILE_NAME_KEY_PAIR } from '../constants/configs';
+import {FILE_NAME_KEY_PAIR} from '../constants/configs';
+import uuidv4 from "uuid/v4";
 
 export const ExonumUtils = {
   generateKeyPair() {
@@ -22,6 +22,11 @@ export const ExonumUtils = {
 
   randomByteBufferOfSize(size = 32) {
     return times(size, () => random(0, 127));
+  },
+
+  generateGuid() {
+    const uuid = uuidv4();
+    return uuid.replace(/-/g, '');
   }
 };
 

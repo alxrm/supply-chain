@@ -19,9 +19,6 @@ const Header = ({ logout }) => (
         <LinkContainer to="/products">
           <NavItem>Products</NavItem>
         </LinkContainer>
-        <LinkContainer to="/receive">
-          <NavItem>Receive</NavItem>
-        </LinkContainer>
       </Nav>
       <Nav pullRight>
         <NavItem onClick={logout}>Logout</NavItem>

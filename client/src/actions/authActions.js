@@ -6,7 +6,7 @@ import TransactionApi from '../utils/TransactionApi';
 
 import {AUTH_INITIAL_STATE} from '../reducers/authReducers';
 
-const KEY_LOGIN_SESSION = 'KEY_LOGIN_SESSION';
+export const KEY_LOGIN_SESSION = 'KEY_LOGIN_SESSION';
 
 export default createActions({
   async signup(name) {
