@@ -3,15 +3,23 @@ import styled from 'styled-components';
 import {withRouter} from 'react-router-dom'
 
 const ProductCard = withRouter(styled.div`
-  border: #ccc solid 1px;
-  padding: 32px;
   margin: 12px 0;
   transition: all .08s ease-in-out;
+  box-shadow: 0 10px 35px rgba(0,0,0,0.1);
+  align-items: stretch;
+  height: 100%;
+  padding: 40px 30px;
+  background-color: #fff;
   cursor: pointer;
   
   &:hover {
-    transform: scale(1.05);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.15);
   }
 `);
 
-export default ProductCard;
+export default ({ name, uid, history }) => (
+  <ProductCard onClick={() => history.push(`/products/${uid}`)}>
+    <div>Product: {name}</div>
+    <div>Uid: {uid}</div>
+  </ProductCard>
+);
