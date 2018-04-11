@@ -50,7 +50,7 @@ class ProductList extends Component {
           <FormButton onClick={() => console.log('Send')} primary>Send</FormButton>
         </div>}
         {!noProducts && Object.values(products).map(it =>
-          <ProductCard name={it.name} uid={it.uid} history={history} key={it.uid} />
+          <ProductCard {...it} history={history} key={it.uid} />
         )}
       </div>
     );
