@@ -21,6 +21,10 @@ const ProductCard = withRouter(styled.div`
      0 0 1px rgba(39,44,49,.09), 
      0 3px 16px rgba(39,44,49,.06);
   }
+  
+  &:hover h4 {
+    color: #0277BD;
+  }
 `);
 
 const QrCodeThumbnail = styled(QRCode)`

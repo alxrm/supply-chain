@@ -8,12 +8,11 @@ import AddProductModal from './AddProductModal';
 import ProductCard from './ProductCard';
 import {NoProductsBlock, NoProductsLabel} from './NoProducts';
 import FormButton from '../Auth/FormButton';
+import PageTitle from '../Layout/PageTitle';
 
 class ProductList extends Component {
   constructor(props) {
     super(props);
-    const { ownerProductsByKey, publicKey } = props;
-    ownerProductsByKey(publicKey);
 
     this.handleShow = this.handleShow.bind(this);
     this.handleClose = this.handleClose.bind(this);
@@ -21,6 +20,11 @@ class ProductList extends Component {
     this.state = {
       show: false
     };
+  }
+
+  componentDidMount() {
+    const { ownerProductsByKey, publicKey } = this.props;
+    ownerProductsByKey(publicKey);
   }
 
   handleClose() {
@@ -39,6 +43,7 @@ class ProductList extends Component {
 
     return (
       <div>
+        <PageTitle>Товары</PageTitle>
         <AddProductModal show={this.state.show} handleClose={this.handleClose} {...this.props} />
         {noProducts &&
         <NoProductsBlock>
@@ -50,7 +55,7 @@ class ProductList extends Component {
           <FormButton onClick={() => console.log('Send')} primary>Send</FormButton>
         </div>}
         {!noProducts && Object.values(products).map(it =>
-          <ProductCard {...it} history={history} key={it.uid} />
+          <ProductCard history={history} key={it.uid} {...it} />
         )}
       </div>
     );
