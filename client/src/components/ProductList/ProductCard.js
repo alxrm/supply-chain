@@ -32,6 +32,16 @@ const QrCodeThumbnail = styled(QRCode)`
   display: table-cell;
 `;
 
+const RoundedCheckbox = styled.div`
+  cursor: pointer;
+  border-radius: 50%;
+  border: 1px solid black;
+  width: 56px;
+  display: table-cell;
+  transition: all .2s;
+  background: ${props => props.selected ? '#0277BD' : 'transparent'};
+`;
+
 const ProductInfo = styled.div`
   color: rgba(11, 31, 53, .95);
   letter-spacing: 0;
@@ -55,6 +65,7 @@ const ProductSecondary = styled.div`
   margin-top: 4px;
 `;
 
+
 export default ({ name, uid, history_len, history }) => (
   <ProductCard onClick={() => history.push(`/products/${uid}`)}>
     <QrCodeThumbnail value={uid} renderAs='svg' size={72} />
@@ -63,5 +74,6 @@ export default ({ name, uid, history_len, history }) => (
       <ProductSecondary><b>Идентификатор:</b> {uid}</ProductSecondary>
       <ProductSecondary><b>Транзакций:</b> {history_len}</ProductSecondary>
     </ProductInfo>
+    <RoundedCheckbox />
   </ProductCard>
 );
