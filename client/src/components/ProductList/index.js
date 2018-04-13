@@ -16,9 +16,11 @@ class ProductList extends Component {
 
     this.handleShow = this.handleShow.bind(this);
     this.handleClose = this.handleClose.bind(this);
+    this.handleProductChecked = this.handleProductChecked.bind(this);
 
     this.state = {
-      show: false
+      show: false,
+      productSelections: {}
     };
   }
 
@@ -35,8 +37,18 @@ class ProductList extends Component {
     this.setState({ show: true });
   }
 
+  handleProductChecked(uid, selected) {
+    this.setState({
+      productSelections: {
+        ...this.state.productSelections,
+        [uid]: selected
+      }
+    })
+  }
+
   render() {
     const { products, history } = this.props;
+    const { productSelections } = this.state;
     const noProducts = !Object.keys(products).length;
 
     console.log(products)
@@ -55,7 +67,13 @@ class ProductList extends Component {
           <FormButton onClick={() => console.log('Send')} primary>Send</FormButton>
         </div>}
         {!noProducts && Object.values(products).map(it =>
-          <ProductCard history={history} key={it.uid} {...it} />
+          <ProductCard
+            history={history}
+            key={it.uid}
+            checked={productSelections[it.uid]}
+            onProductChecked={this.handleProductChecked}
+            {...it}
+          />
         )}
       </div>
     );

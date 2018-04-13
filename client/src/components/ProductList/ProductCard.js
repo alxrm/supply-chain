@@ -32,14 +32,24 @@ const QrCodeThumbnail = styled(QRCode)`
   display: table-cell;
 `;
 
-const RoundedCheckbox = styled.div`
+const CheckboxContainer = styled.div`
+  width: 56px;
+  vertical-align: middle;
+  display: table-cell;
+`;
+
+const ProductCheckbox = styled.div`
   cursor: pointer;
   border-radius: 50%;
-  border: 1px solid black;
-  width: 56px;
-  display: table-cell;
+  border: ${props => props.checked ? '8px solid #0277BD' : 'none'};
+  width: 24px;
+  height: 24px;
+  background: ${props => props.checked ? 'white' : 'rgba(0, 0, 0, 0.2)'};
   transition: all .2s;
-  background: ${props => props.selected ? '#0277BD' : 'transparent'};
+  
+  &:hover {
+    opacity: 0.8;
+  }
 `;
 
 const ProductInfo = styled.div`
@@ -66,7 +76,7 @@ const ProductSecondary = styled.div`
 `;
 
 
-export default ({ name, uid, history_len, history }) => (
+export default ({ name, uid, history_len, history, onProductChecked, checked }) => (
   <ProductCard onClick={() => history.push(`/products/${uid}`)}>
     <QrCodeThumbnail value={uid} renderAs='svg' size={72} />
     <ProductInfo>
@@ -74,6 +84,11 @@ export default ({ name, uid, history_len, history }) => (
       <ProductSecondary><b>Идентификатор:</b> {uid}</ProductSecondary>
       <ProductSecondary><b>Транзакций:</b> {history_len}</ProductSecondary>
     </ProductInfo>
-    <RoundedCheckbox />
+    <CheckboxContainer>
+      <ProductCheckbox checked={checked} onClick={e => {
+        e.stopPropagation();
+        onProductChecked(uid, !checked)
+      }} />
+    </CheckboxContainer>
   </ProductCard>
 );
