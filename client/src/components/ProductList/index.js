@@ -9,6 +9,7 @@ import ProductCard from './ProductCard';
 import {NoProductsBlock, NoProductsLabel} from './NoProducts';
 import FormButton from '../Auth/FormButton';
 import PageTitle from '../Layout/PageTitle';
+import AttachToGroupModal from './AttachToGroupModal';
 
 class ProductList extends Component {
   constructor(props) {
@@ -19,7 +20,8 @@ class ProductList extends Component {
     this.handleProductChecked = this.handleProductChecked.bind(this);
 
     this.state = {
-      show: false,
+      addProductModal: false,
+      attachToGroupModal: false,
       productSelections: {}
     };
   }
@@ -29,12 +31,16 @@ class ProductList extends Component {
     ownerProductsByKey(publicKey);
   }
 
-  handleClose() {
-    this.setState({ show: false });
+  handleClose(modalName) {
+    return () => {
+      this.setState({ [modalName]: false });
+    }
   }
 
-  handleShow() {
-    this.setState({ show: true });
+  handleShow(modalName) {
+    return () => {
+      this.setState({ [modalName]: true });
+    }
   }
 
   handleProductChecked(uid, selected) {
@@ -48,23 +54,41 @@ class ProductList extends Component {
 
   render() {
     const { products, history } = this.props;
-    const { productSelections } = this.state;
-    const noProducts = !Object.keys(products).length;
+    const { productSelections, addProductModal, attachToGroupModal } = this.state;
+    const noProducts = Object.keys(products).length === 0;
+    const hasSelections = Object.values(productSelections).filter(it => it).length !== 0;
 
     console.log(products)
 
     return (
       <div>
         <PageTitle>Товары</PageTitle>
-        <AddProductModal show={this.state.show} handleClose={this.handleClose} {...this.props} />
+        <AddProductModal
+          show={addProductModal}
+          handleClose={this.handleClose('addProductModal')}
+          {...this.props}
+        />
+        <AttachToGroupModal
+          show={attachToGroupModal}
+          handleClose={this.handleClose('attachToGroupModal')}
+          {...this.props}
+        />
         {noProducts &&
         <NoProductsBlock>
           <NoProductsLabel>No products yet</NoProductsLabel>
           <Button bsStyle="primary" onClick={this.handleShow}>Add product</Button>
         </NoProductsBlock>}
         {!noProducts && <div>
-          <FormButton onClick={this.handleShow} primary>Add product</FormButton>
-          <FormButton onClick={() => console.log('Send')} primary>Send</FormButton>
+          <FormButton
+            onClick={this.handleShow('addProductModal')}
+            primary>
+            Add product
+          </FormButton>
+          {hasSelections && <FormButton
+            onClick={this.handleShow('attachToGroupModal')}
+            primary>
+            Add to group
+          </FormButton>}
         </div>}
         {!noProducts && Object.values(products).map(it =>
           <ProductCard

@@ -41,7 +41,7 @@ const CheckboxContainer = styled.div`
 const ProductCheckbox = styled.div`
   cursor: pointer;
   border-radius: 50%;
-  border: ${props => props.checked ? '8px solid #0277BD' : 'none'};
+  border: ${props => props.checked ? '8px solid #0277BD' : '0 solid transparent'};
   width: 24px;
   height: 24px;
   background: ${props => props.checked ? 'white' : 'rgba(0, 0, 0, 0.2)'};
