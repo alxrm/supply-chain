@@ -9,7 +9,7 @@ import ProductCard from './ProductCard';
 import {NoProductsBlock, NoProductsLabel} from './NoProducts';
 import FormButton from '../Auth/FormButton';
 import PageTitle from '../Layout/PageTitle';
-import AttachToGroupModal from './AttachToGroupModal';
+import AddToGroupModal from './AddToGroupModal';
 
 class ProductList extends Component {
   constructor(props) {
@@ -68,8 +68,9 @@ class ProductList extends Component {
           handleClose={this.handleClose('addProductModal')}
           {...this.props}
         />
-        <AttachToGroupModal
+        <AddToGroupModal
           show={attachToGroupModal}
+          items={Object.keys(productSelections).filter(it => productSelections[it])}
           handleClose={this.handleClose('attachToGroupModal')}
           {...this.props}
         />

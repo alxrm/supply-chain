@@ -10,5 +10,10 @@ export default createActions({
   async addProduct(productUid, name, secretKey) {
     const user = CookieUtils.get(KEY_LOGIN_SESSION).user;
     return await TransactionApi.addProduct(productUid, name, { publicKey: user.publicKey, secretKey })
+  },
+
+  async attachToGroup(productUid, groupUid, secretKey) {
+    const user = CookieUtils.get(KEY_LOGIN_SESSION).user;
+    return await TransactionApi.attachToGroup(productUid, groupUid, { publicKey: user.publicKey, secretKey })
   }
 });
