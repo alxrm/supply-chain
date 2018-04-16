@@ -10,20 +10,21 @@ import FormTitle from './FormTitle';
 import AuthInput from './AuthInput';
 import FormButton from './FormButton';
 import FormCaption from './FormCaption';
+import FormButtonContainer from './FormButtonContainer';
 
 const renderNoKeysButtons = (signup, name) => (
-  <div className="center-md">
+  <FormButtonContainer>
     <FormButton onClick={() => signup(name)} primary>Generate keys</FormButton>
     <LinkContainer to="/login">
       <FormButton>Back to login</FormButton>
     </LinkContainer>
-  </div>
+  </FormButtonContainer>
 );
 
 const renderKeysReadyButtons = (login, publicKey, secretKey) => (
-  <div className="center-md">
+  <FormButtonContainer>
     <FormButton onClick={() => login(publicKey, secretKey)} primary>Login</FormButton>
-  </div>
+  </FormButtonContainer>
 );
 
 const renderKeysFields = (isKeyPairCreated, publicKey, secretKey) => {

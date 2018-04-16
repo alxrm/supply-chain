@@ -1,5 +1,6 @@
 import React from 'react';
 import {LinkContainer} from 'react-router-bootstrap';
+import styled from 'styled-components';
 import {Fade} from 'react-bootstrap';
 
 import connectWithDispatch from '../../utils/connectWithDispatch';
@@ -10,6 +11,7 @@ import FormTitle from './FormTitle';
 import AuthInput from './AuthInput';
 import FormButton from './FormButton';
 import FormCaption from './FormCaption';
+import FormButtonContainer from './FormButtonContainer';
 
 const Login = ({ login, logout, changeFormField, error, publicKey, secretKey }) => (
   <CenteringContainer>
@@ -32,12 +34,12 @@ const Login = ({ login, logout, changeFormField, error, publicKey, secretKey }) 
         onChange={changeFormField}
         value={secretKey}
       />
-      <div className="center-md">
+      <FormButtonContainer>
         <FormButton onClick={() => login(publicKey, secretKey)} primary>Login</FormButton>
         <LinkContainer to="/signup">
           <FormButton onClick={logout}>Sign up</FormButton>
         </LinkContainer>
-      </div>
+      </FormButtonContainer>
     </AuthForm>
   </CenteringContainer>
 );

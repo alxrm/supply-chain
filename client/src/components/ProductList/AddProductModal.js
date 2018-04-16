@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {Button, Modal, ControlLabel, FormControl, InputGroup, FormGroup} from 'react-bootstrap';
+import FormButton from '../Auth/FormButton';
 import ExonumUtils from '../../utils/ExonumUtils';
 
 export default class AddProductModal extends Component {
@@ -81,8 +82,8 @@ export default class AddProductModal extends Component {
           </FormGroup>
         </Modal.Body>
         <Modal.Footer>
-          <Button onClick={this.handleAddProduct} bsStyle="success">Add</Button>
-          <Button onClick={handleClose}>Close</Button>
+          <FormButton onClick={this.handleAddProduct} color="#0277BD">Add</FormButton>
+          <FormButton onClick={handleClose} primary>Close</FormButton>
         </Modal.Footer>
       </Modal>
     );

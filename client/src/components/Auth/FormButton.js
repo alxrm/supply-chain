@@ -4,7 +4,6 @@ import styled, {css} from 'styled-components';
 const FormButton = styled.a`
   display: inline-block;
   border-radius: 4px;
-  margin-top: 20px;
   margin-right: 12px;
   padding: 4px 12px;
   background: ${props => props.color || 'transparent'};

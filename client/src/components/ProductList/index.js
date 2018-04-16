@@ -58,6 +58,7 @@ class ProductList extends Component {
     const noProducts = Object.keys(products).length === 0;
     const hasSelections = Object.values(productSelections).filter(it => it).length !== 0;
 
+
     console.log(products)
 
     return (
@@ -76,18 +77,19 @@ class ProductList extends Component {
         />
         {noProducts &&
         <NoProductsBlock>
-          <NoProductsLabel>No products yet</NoProductsLabel>
-          <Button bsStyle="primary" onClick={this.handleShow}>Add product</Button>
+          <NoProductsLabel>Товаров не найдено</NoProductsLabel>
+          <FormButton color="#0277BD" onClick={this.handleShow}>Добавить товар</FormButton>
         </NoProductsBlock>}
-        {!noProducts && <div>
+        {!noProducts &&
+        <div>
           <FormButton
             onClick={this.handleShow('addProductModal')}
-            primary>
+            color="#0277BD">
             Add product
           </FormButton>
           {hasSelections && <FormButton
             onClick={this.handleShow('attachToGroupModal')}
-            primary>
+            color="#0277BD">
             Add to group
           </FormButton>}
         </div>}

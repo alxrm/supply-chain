@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {Button, Modal, ControlLabel, FormControl, InputGroup, FormGroup} from 'react-bootstrap';
+import FormButton from '../Auth/FormButton';
 import ExonumUtils from '../../utils/ExonumUtils';
 
 export default class AddToGroupModal extends Component {
@@ -70,8 +71,8 @@ export default class AddToGroupModal extends Component {
           </FormGroup>
         </Modal.Body>
         <Modal.Footer>
-          <Button onClick={this.handleAdd} bsStyle="success">Add to group</Button>
-          <Button onClick={handleClose}>Close</Button>
+          <FormButton onClick={this.handleAdd} color="#0277BD">Add to group</FormButton>
+          <FormButton onClick={handleClose} primary>Close</FormButton>
         </Modal.Footer>
       </Modal>
     );

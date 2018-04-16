@@ -7,10 +7,9 @@ export const NoProductsBlock = styled.div`
   left: 50%;
   transform: translate(-50%,-50%);
   text-align: center;
-  padding: 16px;
 `;
 
 export const NoProductsLabel = styled.div`
-  font-size: 21px;
-  margin: 12px;
+  font-size: 32px;
+  color: rgba(11, 31, 53, .87);
 `;
