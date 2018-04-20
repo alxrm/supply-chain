@@ -58,7 +58,6 @@ class ProductList extends Component {
     const noProducts = Object.keys(products).length === 0;
     const hasSelections = Object.values(productSelections).filter(it => it).length !== 0;
 
-
     console.log(products)
 
     return (
