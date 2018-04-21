@@ -76,7 +76,7 @@ const ProductSecondary = styled.div`
 `;
 
 
-export default ({ name, uid, history_len, history, onProductChecked, checked }) => (
+export default ({ name, uid, history_len, history, onChecked, checked }) => (
   <ProductCard onClick={() => history.push(`/products/${uid}`)}>
     <QrCodeThumbnail value={uid} renderAs='svg' size={72} />
     <ProductInfo>
@@ -87,7 +87,7 @@ export default ({ name, uid, history_len, history, onProductChecked, checked }) 
     <CheckboxContainer>
       <ProductCheckbox checked={checked} onClick={e => {
         e.stopPropagation();
-        onProductChecked(uid, !checked)
+        onChecked(uid, !checked)
       }} />
     </CheckboxContainer>
   </ProductCard>

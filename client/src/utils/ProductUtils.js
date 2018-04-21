@@ -12,13 +12,10 @@ export const ProductUtils = {
    * ]}
    */
   splitProductsByGroups(productMap = {}) {
-    const productsRaw = Object.values(productMap);
-    const asGroups = toPairs(groupBy(productsRaw, "group_id")).map(it => ({
+    return toPairs(groupBy(Object.values(productMap), "group_id")).map(it => ({
       groupId: it[0] || "Unassigned to group",
       products: it[1]
     }));
-
-    return asGroups;
   }
 };
 
