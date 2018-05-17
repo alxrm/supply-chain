@@ -109,6 +109,7 @@ class ProductList extends Component {
           <div>
             <GroupCard
               uid={group.groupId}
+              key={group.groupId}
               checked={groupSelections[group.groupId]}
               onChecked={this.handleGroupChecked}
             />
