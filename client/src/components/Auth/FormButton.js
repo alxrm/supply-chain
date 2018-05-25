@@ -7,8 +7,10 @@ const FormButton = styled.a`
   margin-right: 12px;
   padding: 4px 12px;
   background: ${props => props.color || 'transparent'};
-  color: ${props => props.textColor || '#eeeeee'};
-  border: 2px solid ${props => props.color || '#eeeeee'};
+  color: ${props => props.textColor || '#eeeeee'} !important;
+  border: 2px solid ${props => props.borderColor || props.color || '#eeeeee'};
+  font-size: ${props => props.fontSize || '14px'};
+  font-weight: ${props => props.fontWeight || '300'};
   cursor: pointer;
   text-align: center;
   transition: all .08s ease-in-out;
@@ -16,8 +18,8 @@ const FormButton = styled.a`
   &:hover {
     transform: translateY(-5%);
     background: ${props => props.color || 'transparent'};
-    color: ${props => props.textColor || '#eeeeee'};
-    border: 2px solid ${props => props.color || '#eeeeee'};
+    color: ${props => props.textColor || '#eeeeee'} !important;
+    border: 2px solid ${props => props.borderColor || props.color || '#eeeeee'};
   }
 
   ${props => props.primary && css`

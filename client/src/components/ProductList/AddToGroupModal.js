@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {Button, Modal, ControlLabel, FormControl, InputGroup, FormGroup} from 'react-bootstrap';
 import FormButton from '../Auth/FormButton';
 import ExonumUtils from '../../utils/ExonumUtils';
+import {ACCENT_COLOR, ACCENT_DARK} from "../../constants/configs";
 
 export default class AddToGroupModal extends Component {
   constructor(props) {
@@ -32,6 +33,8 @@ export default class AddToGroupModal extends Component {
 
     items.forEach(uid => attachToGroup(uid, groupGuid, secretKey));
     handleClose();
+
+    this.setState({ groupGuid: '', secretKey: '' });
   }
 
   render() {
@@ -41,38 +44,38 @@ export default class AddToGroupModal extends Component {
     return (
       <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
-          <Modal.Title>Add {items.length} products to the group</Modal.Title>
+          <Modal.Title>Сгруппировать товары: {items.length}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <FormGroup>
-            <ControlLabel>Group GUID</ControlLabel>
+            <ControlLabel>Идентификатор группы</ControlLabel>
             <InputGroup>
               <InputGroup.Button>
-                <Button onClick={this.handleGenerateGuid}>Generate</Button>
+                <Button onClick={this.handleGenerateGuid}>Сгенерировать</Button>
               </InputGroup.Button>
               <FormControl
                 type="text"
                 id="groupGuid"
-                placeholder="Enter product GUID"
+                placeholder="Введите идентификатор группы"
                 value={groupGuid}
                 onChange={this.handleChange}
               />
             </InputGroup>
           </FormGroup>
           <FormGroup>
-            <ControlLabel>Secret key</ControlLabel>
+            <ControlLabel>Секретный ключ</ControlLabel>
             <FormControl
               type="text"
               id="secretKey"
-              placeholder="Enter secret key"
+              placeholder="Введите секретный ключ"
               value={secretKey}
               onChange={this.handleChange}
             />
           </FormGroup>
         </Modal.Body>
         <Modal.Footer>
-          <FormButton onClick={this.handleAdd} color="#0277BD">Add to group</FormButton>
-          <FormButton onClick={handleClose} primary>Close</FormButton>
+          <FormButton onClick={this.handleAdd} color={ACCENT_COLOR}>Добавить</FormButton>
+          <FormButton onClick={handleClose} textColor={ACCENT_DARK} primary>Закрыть</FormButton>
         </Modal.Footer>
       </Modal>
     );

@@ -5,8 +5,7 @@ export const AUTH_INITIAL_STATE = {
   error: false,
   user: {
     name: '',
-    publicKey: '',
-    secretKey: ''
+    publicKey: ''
   }
 };
 

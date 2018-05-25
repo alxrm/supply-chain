@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {Button, Modal, ControlLabel, FormControl, InputGroup, FormGroup} from 'react-bootstrap';
 import FormButton from '../Auth/FormButton';
 import ExonumUtils from '../../utils/ExonumUtils';
+import {ACCENT_COLOR, ACCENT_DARK} from "../../constants/configs";
 
 export default class AddProductModal extends Component {
   constructor(props) {
@@ -33,6 +34,8 @@ export default class AddProductModal extends Component {
 
     addProduct(guid, name, secretKey);
     handleClose();
+
+    this.setState({ name: '', guid: '', secretKey: '' });
   }
 
   render() {
@@ -42,48 +45,48 @@ export default class AddProductModal extends Component {
     return (
       <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
-          <Modal.Title>Adding new product</Modal.Title>
+          <Modal.Title>Добавить новый товар</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <FormGroup>
-            <ControlLabel>Name</ControlLabel>
+            <ControlLabel>Название</ControlLabel>
             <FormControl
               type="text"
               id="name"
-              placeholder="Enter product name"
+              placeholder="Введите название товара"
               value={name}
               onChange={this.handleChange}
             />
           </FormGroup>
           <FormGroup>
-            <ControlLabel>Product GUID</ControlLabel>
+            <ControlLabel>Идентификатор товара</ControlLabel>
             <InputGroup>
               <InputGroup.Button>
-                <Button onClick={this.handleGenerateGuid}>Generate</Button>
+                <Button onClick={this.handleGenerateGuid}>Сгенерировать</Button>
               </InputGroup.Button>
               <FormControl
                 type="text"
                 id="guid"
-                placeholder="Enter product GUID"
+                placeholder="Введите идентификатор товара"
                 value={guid}
                 onChange={this.handleChange}
               />
             </InputGroup>
           </FormGroup>
           <FormGroup>
-            <ControlLabel>Secret key</ControlLabel>
+            <ControlLabel>Секретный ключ</ControlLabel>
             <FormControl
               type="text"
               id="secretKey"
-              placeholder="Enter secret key"
+              placeholder="Введите секретный ключ"
               value={secretKey}
               onChange={this.handleChange}
             />
           </FormGroup>
         </Modal.Body>
         <Modal.Footer>
-          <FormButton onClick={this.handleAddProduct} color="#0277BD">Add</FormButton>
-          <FormButton onClick={handleClose} primary>Close</FormButton>
+          <FormButton onClick={this.handleAddProduct} color={ACCENT_COLOR}>Добавить</FormButton>
+          <FormButton onClick={handleClose} textColor={ACCENT_DARK} primary>Закрыть</FormButton>
         </Modal.Footer>
       </Modal>
     );

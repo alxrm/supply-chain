@@ -1,6 +1,6 @@
 {
-  "short_name": "BrandChain",
-  "name": "BrandChain Web Application",
+  "short_name": "supply.ch",
+  "name": "supply.ch app",
   "icons": [
     {
       "src": "favicon.ico",
@@ -10,6 +10,6 @@
   ],
   "start_url": "./index.html",
   "display": "standalone",
-  "theme_color": "#000000",
+  "theme_color": "#0277BD",
   "background_color": "#ffffff"
 }

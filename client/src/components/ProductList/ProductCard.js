@@ -2,28 +2,25 @@ import React from 'react';
 import styled from 'styled-components';
 import {withRouter} from 'react-router-dom'
 import QRCode from 'qrcode.react';
+import {ACCENT_COLOR} from "../../constants/configs";
 
 const ProductCard = withRouter(styled.div`
   display: table;
   width: 100%;
   background-color: #fff;
   padding: 20px 30px 20px;
-  margin: 12px 0;
   transition: transform .2s,box-shadow .2s;
-  cursor: pointer;
+  cursor: pointer;  
   box-shadow: inset 0 0 0 1px rgba(0,0,0,.03),
-   8px 14px 38px rgba(39,44,49,.06), 
-   1px 3px 8px rgba(39,44,49,.03);
+    0 0 1px rgba(39,44,49,.09), 
+    0 3px 16px rgba(39,44,49,.06);
   
   &:hover {
     transform: translateY(0);
-    box-shadow: inset 0 0 0 1px rgba(0,0,0,.03),
-     0 0 1px rgba(39,44,49,.09), 
-     0 3px 16px rgba(39,44,49,.06);
   }
   
   &:hover h4 {
-    color: #0277BD;
+    color: ${ACCENT_COLOR};
   }
 `);
 
@@ -78,7 +75,7 @@ const ProductSecondary = styled.div`
 
 export default ({ name, uid, history_len, history, onChecked, checked }) => (
   <ProductCard onClick={() => history.push(`/products/${uid}`)}>
-    <QrCodeThumbnail value={uid} renderAs='svg' size={72} />
+    <QrCodeThumbnail value={`product-${uid}`} renderAs='svg' size={72} />
     <ProductInfo>
       <ProductName>{name}</ProductName>
       <ProductSecondary><b>Идентификатор:</b> {uid}</ProductSecondary>

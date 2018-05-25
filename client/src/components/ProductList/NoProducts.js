@@ -10,6 +10,7 @@ export const NoProductsBlock = styled.div`
 `;
 
 export const NoProductsLabel = styled.div`
-  font-size: 32px;
+  font-size: 24px;
+  padding: 16px;
   color: rgba(11, 31, 53, .87);
 `;

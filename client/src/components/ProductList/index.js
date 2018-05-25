@@ -12,6 +12,8 @@ import FormButton from '../Auth/FormButton';
 import PageTitle from '../Layout/PageTitle';
 import AddToGroupModal from './AddToGroupModal';
 import GroupCard from './GroupCard';
+import {ACCENT_COLOR} from "../../constants/configs";
+import SendGroupsModal from "./SendGroupsModal";
 
 class ProductList extends Component {
   constructor(props) {
@@ -20,18 +22,27 @@ class ProductList extends Component {
     this.handleShow = this.handleShow.bind(this);
     this.handleClose = this.handleClose.bind(this);
     this.handleProductChecked = this.handleProductChecked.bind(this);
+    this.handleGroupChecked = this.handleGroupChecked.bind(this);
+    this.reloadData = this.reloadData.bind(this);
+    this.subscribe = this.subscribe.bind(this);
+    this.unsubscribe = this.unsubscribe.bind(this);
 
     this.state = {
       addProductModal: false,
       attachToGroupModal: false,
+      sendGroupsModal: false,
       productSelections: {},
       groupSelections: {}
     };
   }
 
   componentDidMount() {
-    const { ownerProductsByKey, publicKey } = this.props;
-    ownerProductsByKey(publicKey);
+    this.reloadData();
+    this.subscribe();
+  }
+
+  componentWillUnmount() {
+    this.unsubscribe();
   }
 
   handleClose(modalName) {
@@ -64,18 +75,32 @@ class ProductList extends Component {
     })
   }
 
+  subscribe() {
+    this.subscription = setInterval(this.reloadData, 1000);
+  }
+
+
+  unsubscribe() {
+    clearInterval(this.subscription);
+  }
+
+  reloadData() {
+    const { ownerProductsByKey, publicKey } = this.props;
+    ownerProductsByKey(publicKey);
+  }
+
   render() {
     const { products, history } = this.props;
-    const { productSelections, groupSelections, addProductModal, attachToGroupModal } = this.state;
+    const { productSelections, groupSelections, sendGroupsModal, addProductModal, attachToGroupModal } = this.state;
     const noProducts = Object.keys(products).length === 0;
     const hasSelections = Object.values(productSelections).filter(it => it).length !== 0;
+    const hasGroupSelections = Object.values(groupSelections).filter(it => it).length !== 0;
     const productsGrouped = ProductUtils.splitProductsByGroups(products);
 
     console.log(productsGrouped)
 
     return (
-      <div>
-        <PageTitle>Товары</PageTitle>
+      <div style={{ padding: '18px 0' }}>
         <AddProductModal
           show={addProductModal}
           handleClose={this.handleClose('addProductModal')}
@@ -87,29 +112,53 @@ class ProductList extends Component {
           handleClose={this.handleClose('attachToGroupModal')}
           {...this.props}
         />
+        <SendGroupsModal
+          show={sendGroupsModal}
+          groups={Object.keys(groupSelections).filter(it => groupSelections[it])}
+          handleClose={this.handleClose('sendGroupsModal')}
+          {...this.props}
+        />
         {noProducts &&
         <NoProductsBlock>
           <NoProductsLabel>Товаров не найдено</NoProductsLabel>
-          <FormButton color="#0277BD" onClick={this.handleShow}>Добавить товар</FormButton>
+          <FormButton color={ACCENT_COLOR} onClick={this.handleShow('addProductModal')}>Добавить товар</FormButton>
         </NoProductsBlock>}
         {!noProducts &&
         <div>
           <FormButton
             onClick={this.handleShow('addProductModal')}
-            color="#0277BD">
-            Add product
+            color="transparent"
+            borderColor={ACCENT_COLOR}
+            textColor={ACCENT_COLOR}
+            fontWeight={500}
+          >
+            Добавить товар
           </FormButton>
-          {hasSelections && <FormButton
+          {hasSelections &&
+          <FormButton
             onClick={this.handleShow('attachToGroupModal')}
-            color="#0277BD">
-            Add to group
+            color="transparent"
+            borderColor={ACCENT_COLOR}
+            textColor={ACCENT_COLOR}
+            fontWeight={500}
+          >
+            Добавить в группу
+          </FormButton>}
+          {hasGroupSelections &&
+          <FormButton
+            onClick={this.handleShow('sendGroupsModal')}
+            color="transparent"
+            borderColor={ACCENT_COLOR}
+            textColor={ACCENT_COLOR}
+            fontWeight={500}
+          >
+            Отправить группы
           </FormButton>}
         </div>}
         {!noProducts && productsGrouped.map(group =>
-          <div>
+          <div key={group.groupId}>
             <GroupCard
               uid={group.groupId}
-              key={group.groupId}
               checked={groupSelections[group.groupId]}
               onChecked={this.handleGroupChecked}
             />

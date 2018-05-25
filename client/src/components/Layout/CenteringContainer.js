@@ -7,7 +7,7 @@ const CenteringContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: ${({ bgColor = '#2f2f2f' }) => bgColor};
+  background-color: ${({ bgColor = '#white' }) => bgColor};
 `;
 
 export default CenteringContainer;

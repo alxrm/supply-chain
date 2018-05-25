@@ -15,5 +15,10 @@ export default createActions({
   async attachToGroup(productUid, groupUid, secretKey) {
     const user = CookieUtils.get(KEY_LOGIN_SESSION).user;
     return await TransactionApi.attachToGroup(productUid, groupUid, { publicKey: user.publicKey, secretKey })
+  },
+
+  async sendGroup(groupUid, secretKey) {
+    const user = CookieUtils.get(KEY_LOGIN_SESSION).user;
+    return await TransactionApi.sendGroup(groupUid, { publicKey: user.publicKey, secretKey })
   }
 });

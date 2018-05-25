@@ -11,19 +11,37 @@ import AuthInput from './AuthInput';
 import FormButton from './FormButton';
 import FormCaption from './FormCaption';
 import FormButtonContainer from './FormButtonContainer';
+import {ACCENT_COLOR, ACCENT_DARK} from "../../constants/configs";
 
 const renderNoKeysButtons = (signup, name) => (
   <FormButtonContainer>
-    <FormButton onClick={() => signup(name)} primary>Generate keys</FormButton>
+    <FormButton
+      onClick={() => signup(name)}
+      color={ACCENT_DARK}
+      fontSize="18px"
+    >
+      Создать ключи
+    </FormButton>
     <LinkContainer to="/login">
-      <FormButton>Back to login</FormButton>
+      <FormButton
+        color={ACCENT_DARK}
+        fontSize="18px"
+      >
+        Вернуться к логину
+      </FormButton>
     </LinkContainer>
   </FormButtonContainer>
 );
 
 const renderKeysReadyButtons = (login, publicKey, secretKey) => (
   <FormButtonContainer>
-    <FormButton onClick={() => login(publicKey, secretKey)} primary>Login</FormButton>
+    <FormButton
+      onClick={() => login(publicKey, secretKey)}
+      color={ACCENT_DARK}
+      fontSize="18px"
+    >
+      Войти
+    </FormButton>
   </FormButtonContainer>
 );
 
@@ -37,13 +55,13 @@ const renderKeysFields = (isKeyPairCreated, publicKey, secretKey) => {
       <AuthInput
         type="text"
         value={publicKey}
-        placeholder="Public key"
+        placeholder="Публичный ключ"
         readOnly
       />
       <AuthInput
         type="text"
         value={secretKey}
-        placeholder="Secret key"
+        placeholder="Секретный ключ"
         readOnly
       />
     </div>
@@ -63,9 +81,9 @@ const renderSuccessMessage = () => (
 );
 
 const Signup = ({ login, signup, error, name, publicKey, secretKey, changeFormField, isKeyPairCreated }) => (
-  <CenteringContainer>
+  <CenteringContainer bgColor={ACCENT_DARK}>
     <AuthForm>
-      <FormTitle>Create new account</FormTitle>
+      <FormTitle>Регистрация</FormTitle>
       <Fade in={isKeyPairCreated || error}>
         <FormCaption success={isKeyPairCreated} error={error}>
           {error ? renderErrorMessage(name) : renderSuccessMessage()}
@@ -75,7 +93,7 @@ const Signup = ({ login, signup, error, name, publicKey, secretKey, changeFormFi
         type="text"
         id="name"
         value={name}
-        placeholder="Name"
+        placeholder="Имя"
         onChange={changeFormField}
         autoFocus
       />

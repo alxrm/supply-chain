@@ -23,7 +23,7 @@ export default createActions({
   async login(publicKey, secretKey) {
     const isValid = ExonumUtils.validateKeyPair(publicKey, secretKey);
     const { data } = await DataApi.owner(publicKey);
-    const nextState = { isAuthorized: isValid, user: { publicKey, secretKey, name: data.name } };
+    const nextState = { isAuthorized: isValid, user: { publicKey, name: data.name } };
 
     if (isValid && data && data.name) {
       CookieUtils.set(KEY_LOGIN_SESSION, nextState);
