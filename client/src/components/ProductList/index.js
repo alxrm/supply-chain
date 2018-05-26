@@ -1,7 +1,4 @@
 import React, {Component} from 'react';
-import styled from 'styled-components';
-import {withRouter} from 'react-router-dom'
-import {Button} from 'react-bootstrap';
 
 import connectWithDispatch from '../../utils/connectWithDispatch';
 import ProductUtils from '../../utils/ProductUtils';
@@ -9,7 +6,6 @@ import AddProductModal from './AddProductModal';
 import ProductCard from './ProductCard';
 import {NoProductsBlock, NoProductsLabel} from './NoProducts';
 import FormButton from '../Auth/FormButton';
-import PageTitle from '../Layout/PageTitle';
 import AddToGroupModal from './AddToGroupModal';
 import GroupCard from './GroupCard';
 import {ACCENT_COLOR} from "../../constants/configs";
@@ -142,7 +138,7 @@ class ProductList extends Component {
             textColor={ACCENT_COLOR}
             fontWeight={500}
           >
-            Добавить в группу
+            Добавить в партию
           </FormButton>}
           {hasGroupSelections &&
           <FormButton
@@ -152,7 +148,7 @@ class ProductList extends Component {
             textColor={ACCENT_COLOR}
             fontWeight={500}
           >
-            Отправить группы
+            Отправить партии
           </FormButton>}
         </div>}
         {!noProducts && productsGrouped.map(group =>

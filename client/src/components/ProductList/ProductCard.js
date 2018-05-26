@@ -15,10 +15,6 @@ const ProductCard = withRouter(styled.div`
     0 0 1px rgba(39,44,49,.09), 
     0 3px 16px rgba(39,44,49,.06);
   
-  &:hover {
-    transform: translateY(0);
-  }
-  
   &:hover h4 {
     color: ${ACCENT_COLOR};
   }

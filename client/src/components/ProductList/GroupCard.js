@@ -1,11 +1,9 @@
 import React from 'react';
 import {ACCENT_COLOR} from '../../constants/configs';
-import styled from 'styled-components';
+import styled, {css} from 'styled-components';
 import {withRouter} from 'react-router-dom';
-import QRCode from 'qrcode.react';
 
 const GroupCard = withRouter(styled.div`
-  display: table;
   width: 100%;
   background-color: rgb(2,119,189, 0.8);
   padding: 20px 30px 20px;
@@ -15,10 +13,12 @@ const GroupCard = withRouter(styled.div`
   box-shadow: inset 0 0 0 1px rgba(0,0,0,.03),
     0 0 1px rgba(39,44,49,.09), 
     0 3px 16px rgba(39,44,49,.06);
-     
-  &:hover {
-    transform: translateY(0);
-  }
+    
+    
+  ${props => props.noGroup && css`
+    background-color: rgba(2,119,189, 0.5);
+    cursor: auto;
+  `}
 `);
 
 const CheckboxContainer = styled.div`
@@ -67,12 +67,12 @@ export default ({ uid, checked, onChecked }) => {
   const noGroup = uid === 'Unassigned to group';
 
   return (
-    <GroupCard onClick={() => !noGroup && onChecked(uid, !checked)}>
+    <GroupCard onClick={() => !noGroup && onChecked(uid, !checked)} noGroup={noGroup}>
       <Info>
-        {noGroup && <div><Name>Без группы</Name></div>}
+        {noGroup && <div><Name>Не присвоены</Name></div>}
         {!noGroup &&
         <div>
-          <Name>Группа</Name>
+          <Name>Партия товаров</Name>
           <Secondary>Идентификатор: {uid}</Secondary>
         </div>}
       </Info>

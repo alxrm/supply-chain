@@ -1,4 +1,4 @@
-import React from 'react';
+import 'react';
 import styled from 'styled-components';
 
 export const NoProductsBlock = styled.div`

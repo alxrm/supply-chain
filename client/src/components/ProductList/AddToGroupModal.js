@@ -44,11 +44,11 @@ export default class AddToGroupModal extends Component {
     return (
       <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
-          <Modal.Title>Сгруппировать товары: {items.length}</Modal.Title>
+          <Modal.Title>Сгруппировать товары в партию: {items.length}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <FormGroup>
-            <ControlLabel>Идентификатор группы</ControlLabel>
+            <ControlLabel>Идентификатор партии</ControlLabel>
             <InputGroup>
               <InputGroup.Button>
                 <Button onClick={this.handleGenerateGuid}>Сгенерировать</Button>

@@ -4,4 +4,4 @@ export const SERVICE_URL = `${BASE_URL}/api/services/supply-chain/v1`;
 export const FILE_NAME_KEY_PAIR = 'BrandchainKeyPair.json';
 
 export const ACCENT_COLOR = '#0277BD';
-export const ACCENT_DARK = '#00688e';
+export const ACCENT_DARK = '#00303d';

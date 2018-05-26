@@ -1,6 +1,5 @@
 import React from 'react';
 import {LinkContainer} from 'react-router-bootstrap';
-import styled from 'styled-components';
 import {Fade} from 'react-bootstrap';
 
 import connectWithDispatch from '../../utils/connectWithDispatch';
@@ -8,27 +7,30 @@ import connectWithDispatch from '../../utils/connectWithDispatch';
 import CenteringContainer from '../Layout/CenteringContainer';
 import AuthForm from './AuthForm';
 import FormTitle from './FormTitle';
-import AuthInput from './AuthInput';
 import FormButton from './FormButton';
 import FormCaption from './FormCaption';
 import FormButtonContainer from './FormButtonContainer';
-import {ACCENT_COLOR, ACCENT_DARK} from '../../constants/configs';
+import {ACCENT_COLOR} from '../../constants/configs';
+import Brand from "./Brand";
+import BoldInput from "../Layout/BoldInput";
+
 
 const Login = ({ login, logout, changeFormField, error, publicKey, secretKey }) => (
-  <CenteringContainer bgColor={ACCENT_DARK}>
+  <CenteringContainer bgColor={ACCENT_COLOR}>
+    <Brand>supply.ch</Brand>
     <AuthForm>
       <FormTitle>Вход</FormTitle>
       <Fade in={error}>
         <FormCaption error>Invalid key pair provided</FormCaption>
       </Fade>
-      <AuthInput
+      <BoldInput
         type="text"
         id="publicKey"
         placeholder="Публичный ключ"
         onChange={changeFormField}
         value={publicKey}
       />
-      <AuthInput
+      <BoldInput
         type="text"
         id="secretKey"
         placeholder="Секретный ключ"
@@ -38,7 +40,7 @@ const Login = ({ login, logout, changeFormField, error, publicKey, secretKey }) 
       <FormButtonContainer>
         <FormButton
           onClick={() => login(publicKey, secretKey)}
-          color={ACCENT_DARK}
+          color={ACCENT_COLOR}
           fontSize="18px"
         >
           Войти
@@ -46,7 +48,7 @@ const Login = ({ login, logout, changeFormField, error, publicKey, secretKey }) 
         <LinkContainer to="/signup">
           <FormButton
             onClick={logout}
-            color={ACCENT_DARK}
+            color={ACCENT_COLOR}
             fontSize="18px"
           >
             Регистрация

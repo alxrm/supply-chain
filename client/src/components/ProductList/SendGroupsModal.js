@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Button, Modal, ControlLabel, FormControl, InputGroup, FormGroup} from 'react-bootstrap';
+import {Modal, ControlLabel, FormControl, FormGroup} from 'react-bootstrap';
 import FormButton from '../Auth/FormButton';
 import {ACCENT_COLOR, ACCENT_DARK} from "../../constants/configs";
 
@@ -37,7 +37,7 @@ export default class SendGroupsModal extends Component {
     return (
       <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
-          <Modal.Title>Отправить группы: {groups.length}</Modal.Title>
+          <Modal.Title>Отправить партии: {groups.length}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <FormGroup>

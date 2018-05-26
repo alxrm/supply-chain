@@ -1,9 +1,10 @@
-import {keyPair, sign, verifySignature} from 'exonum-client';
+import {keyPair, merkleProof, sign, verifySignature} from 'exonum-client';
 import times from 'lodash.times';
 import random from 'lodash.random';
 import FileUtils from './FileUtils';
 import {FILE_NAME_KEY_PAIR} from '../constants/configs';
 import uuidv4 from "uuid/v4";
+import {TransactionMetaData} from '../constants/transactions';
 
 export const ExonumUtils = {
   generateKeyPair() {
@@ -18,6 +19,21 @@ export const ExonumUtils = {
     const signature = sign(secretKey, randomBuffer);
 
     return verifySignature(signature, publicKey, randomBuffer);
+  },
+
+  // data, history
+  unpackHistoryProof({ history_hash, history_len }, { proof }) {
+    if (!history_hash) {
+      return {};
+    }
+
+    return merkleProof(
+      history_hash,
+      parseInt(history_len, 10),
+      proof,
+      [0, parseInt(history_len, 10)],
+      TransactionMetaData
+    );
   },
 
   randomByteBufferOfSize(size = 32) {

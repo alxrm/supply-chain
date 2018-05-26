@@ -14,6 +14,7 @@ import Product from './Product';
 import Receive from './Receive';
 import Owner from './Owner';
 import ProductList from './ProductList';
+import Scanner from './Scanner';
 
 const renderAuthorized = () => (
   <div>
@@ -23,6 +24,8 @@ const renderAuthorized = () => (
         <Route path="/owner" component={Owner} exact />
         <Route path="/products/:uid" component={Product} />
         <Route path="/products" component={ProductList} />
+        <Route path="/scanner" component={Scanner} />
+        <Route path="/transferring" component={ProductList} />
         <Route path="/receive" component={Receive} />
         <Redirect from="/" to="/owner" />
         <Redirect from="**" to="/" />

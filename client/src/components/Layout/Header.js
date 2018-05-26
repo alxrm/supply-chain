@@ -3,7 +3,7 @@ import {Nav, Navbar, NavItem} from 'react-bootstrap';
 import {LinkContainer} from 'react-router-bootstrap';
 import connectWithDispatch, {none} from '../../utils/connectWithDispatch';
 import styled from 'styled-components';
-import {ACCENT_COLOR, ACCENT_DARK} from '../../constants/configs';
+import {ACCENT_COLOR} from '../../constants/configs';
 
 const Brand = styled(Navbar.Brand)`
   font-weight: 900;
@@ -42,13 +42,19 @@ const Header = ({ logout }) => (
     <Navbar.Collapse>
       <Nav>
         <LinkContainer to="/owner">
-          <NavItemStyled>Склад</NavItemStyled>
+          <NavItemStyled>Держатель</NavItemStyled>
         </LinkContainer>
         <LinkContainer to="/products">
           <NavItemStyled>Товары</NavItemStyled>
         </LinkContainer>
+        <LinkContainer to="/transferring">
+          <NavItemStyled>Товары в пути</NavItemStyled>
+        </LinkContainer>
       </Nav>
       <Nav pullRight>
+        <LinkContainer to="/scanner">
+          <NavItemStyled>Подключить сканер</NavItemStyled>
+        </LinkContainer>
         <NavItemStyled onClick={logout}>Выйти</NavItemStyled>
       </Nav>
     </Navbar.Collapse>

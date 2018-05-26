@@ -7,24 +7,25 @@ import connectWithDispatch from '../../utils/connectWithDispatch';
 import CenteringContainer from '../Layout/CenteringContainer';
 import AuthForm from './AuthForm';
 import FormTitle from './FormTitle';
-import AuthInput from './AuthInput';
 import FormButton from './FormButton';
 import FormCaption from './FormCaption';
 import FormButtonContainer from './FormButtonContainer';
-import {ACCENT_COLOR, ACCENT_DARK} from "../../constants/configs";
+import {ACCENT_COLOR} from "../../constants/configs";
+import Brand from "./Brand";
+import BoldInput from "../Layout/BoldInput";
 
 const renderNoKeysButtons = (signup, name) => (
   <FormButtonContainer>
     <FormButton
       onClick={() => signup(name)}
-      color={ACCENT_DARK}
+      color={ACCENT_COLOR}
       fontSize="18px"
     >
       Создать ключи
     </FormButton>
     <LinkContainer to="/login">
       <FormButton
-        color={ACCENT_DARK}
+        color={ACCENT_COLOR}
         fontSize="18px"
       >
         Вернуться к логину
@@ -37,7 +38,7 @@ const renderKeysReadyButtons = (login, publicKey, secretKey) => (
   <FormButtonContainer>
     <FormButton
       onClick={() => login(publicKey, secretKey)}
-      color={ACCENT_DARK}
+      color={ACCENT_COLOR}
       fontSize="18px"
     >
       Войти
@@ -52,13 +53,13 @@ const renderKeysFields = (isKeyPairCreated, publicKey, secretKey) => {
 
   return (
     <div>
-      <AuthInput
+      <BoldInput
         type="text"
         value={publicKey}
         placeholder="Публичный ключ"
         readOnly
       />
-      <AuthInput
+      <BoldInput
         type="text"
         value={secretKey}
         placeholder="Секретный ключ"
@@ -81,7 +82,8 @@ const renderSuccessMessage = () => (
 );
 
 const Signup = ({ login, signup, error, name, publicKey, secretKey, changeFormField, isKeyPairCreated }) => (
-  <CenteringContainer bgColor={ACCENT_DARK}>
+  <CenteringContainer bgColor={ACCENT_COLOR}>
+    <Brand>supply.ch</Brand>
     <AuthForm>
       <FormTitle>Регистрация</FormTitle>
       <Fade in={isKeyPairCreated || error}>
@@ -89,7 +91,7 @@ const Signup = ({ login, signup, error, name, publicKey, secretKey, changeFormFi
           {error ? renderErrorMessage(name) : renderSuccessMessage()}
         </FormCaption>
       </Fade>
-      <AuthInput
+      <BoldInput
         type="text"
         id="name"
         value={name}
