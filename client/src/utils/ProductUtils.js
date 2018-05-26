@@ -11,11 +11,17 @@ export const ProductUtils = {
    *  { groupId, products: [{ product1 }, { product2 }] }
    * ]}
    */
-  splitProductsByGroups(productMap = {}) {
+  splitProductsByGroups(productMap = {}, showTransferring) {
     const noGroup = 'Unassigned to group';
 
     return toPairs(groupBy(Object.values(productMap), 'group_id'))
-      .filter(it => !it[1].some(p => p.transferring))
+      .filter(it => {
+        if (showTransferring) {
+          return it[0] && it[1].every(p => p.transferring);
+        }
+
+        return !it[1].some(p => p.transferring)
+      })
       .map(it => ({
         groupId: it[0] || noGroup,
         products: it[1]

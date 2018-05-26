@@ -12,7 +12,15 @@ export const ownerProducts = handleActions({
     }
 
     return { error: false, products: payload };
-  }
+  },
+
+  transferringProducts(state, { payload, error }) {
+    if (error) {
+      return { error, products: {} };
+    }
+
+    return { error: false, products: payload };
+  },
 }, PRODUCT_LIST_INITIAL_STATE);
 
 export default ownerProducts;

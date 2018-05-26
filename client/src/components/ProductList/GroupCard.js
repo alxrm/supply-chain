@@ -2,8 +2,10 @@ import React from 'react';
 import {ACCENT_COLOR} from '../../constants/configs';
 import styled, {css} from 'styled-components';
 import {withRouter} from 'react-router-dom';
+import QRCode from 'qrcode.react';
 
 const GroupCard = withRouter(styled.div`
+  display: table;
   width: 100%;
   background-color: rgb(2,119,189, 0.8);
   padding: 20px 30px 20px;
@@ -19,7 +21,25 @@ const GroupCard = withRouter(styled.div`
     background-color: rgba(2,119,189, 0.5);
     cursor: auto;
   `}
+  
+  ${props => props.isTransferring && css`
+    background-color: white;
+    cursor: auto;
+    
+    h4 {
+      color: rgba(11, 31, 53, 1);
+    }
+    
+    div {
+      color: rgba(11, 31, 53, .7);
+    }
+  `}
 `);
+
+const QrCodeThumbnail = styled(QRCode)`
+  width: 100px;
+  display: table-cell;
+`;
 
 const CheckboxContainer = styled.div`
   width: 56px;
@@ -48,35 +68,45 @@ const Info = styled.div`
   vertical-align: top;
   padding: 0;
   width: 100%;
+  
+  ${props => props.isTransferring && css`
+    padding: 0 20px;
+  `}
 `;
 
 const Name = styled.h4`
   color: white;
   font-size: 24px;
-  margin: 0;
+  margin: 0 0 12px;
   width: 100%;
 `;
 
 const Secondary = styled.div`
   color: white;
   font-size: 16px;
-  margin-top: 14px;
+  margin-top: 4px;
 `;
 
-export default ({ uid, checked, onChecked }) => {
+export default ({ uid, isTransferring, size, checked, onChecked }) => {
   const noGroup = uid === 'Unassigned to group';
 
   return (
-    <GroupCard onClick={() => !noGroup && onChecked(uid, !checked)} noGroup={noGroup}>
-      <Info>
+    <GroupCard
+      onClick={() => !noGroup && onChecked(uid, !checked)}
+      noGroup={noGroup}
+      isTransferring={isTransferring}
+    >
+      {isTransferring && <QrCodeThumbnail value={`group-${uid}`} renderAs='svg' size={100} />}
+      <Info isTransferring={isTransferring}>
         {noGroup && <div><Name>Не присвоены</Name></div>}
         {!noGroup &&
         <div>
           <Name>Партия товаров</Name>
           <Secondary>Идентификатор: {uid}</Secondary>
+          {isTransferring && <Secondary>Количество товаров: {size}</Secondary>}
         </div>}
       </Info>
-      {!noGroup &&
+      {!noGroup && !isTransferring &&
       <CheckboxContainer>
         <Checkbox checked={checked} onClick={e => {
           e.stopPropagation();

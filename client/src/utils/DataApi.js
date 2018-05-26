@@ -24,6 +24,10 @@ export const DataApi = {
     return await get(`owners/${publicKey}/products`);
   },
 
+  async transferringProducts() {
+    return await get(`products/transferring`);
+  },
+
   async group(groupId) {
     return await get(`groups/${groupId}`);
   },

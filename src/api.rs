@@ -3,6 +3,7 @@ use controller::{
     OwnerController,
     ProductController,
     ProductsByOwnerController,
+    ProductsTransferringController,
     TransactionController,
 };
 use exonum::api::Api;
@@ -14,6 +15,7 @@ use handler::{
     OwnerHandler,
     ProductHandler,
     ProductsByOwnerHandler,
+    ProductsTransferringHandler,
     TransactionHandler,
 };
 use router::Router;
@@ -49,12 +51,17 @@ impl<T> Api for SupplyChainApi<T> where T: 'static + TransactionSend + Clone {
             self.clone(), ProductsByOwnerController::new(self.clone().blockchain),
         );
 
+        let products_transferring_handler = ProductsTransferringHandler::new(
+            self.clone(), ProductsTransferringController::new(self.clone().blockchain),
+        );
+
         let transaction_handler = TransactionHandler::new(
             self.clone(), TransactionController::new(self.clone().channel, self.clone().blockchain),
         );
 
         router.post(&"/v1/transaction", transaction_handler, "transaction");
         router.get(&"/v1/products/:uid", product_handler, "product");
+        router.get(&"/v1/products/transferring", products_transferring_handler, "products_transferring");
         router.get(&"/v1/groups/:groupId", group_handler, "group");
         router.get(&"/v1/owners/:pubKey/products", products_by_owner_handler, "products_by_owner");
         router.get(&"/v1/owners/:pubKey", owner_handler, "owner");

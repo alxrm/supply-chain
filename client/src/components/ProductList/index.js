@@ -81,17 +81,25 @@ class ProductList extends Component {
   }
 
   reloadData() {
-    const { ownerProductsByKey, publicKey } = this.props;
+    const { ownerProductsByKey, transferringProducts, publicKey, match } = this.props;
+    const isTransferring = match.path.indexOf('/transferring') !== -1;
+
+    if (isTransferring) {
+      transferringProducts();
+      return;
+    }
+
     ownerProductsByKey(publicKey);
   }
 
   render() {
-    const { products, history } = this.props;
+    const { products, history, match } = this.props;
     const { productSelections, groupSelections, sendGroupsModal, addProductModal, attachToGroupModal } = this.state;
+    const isTransferring = match.path.indexOf('/transferring') !== -1;
     const noProducts = Object.keys(products).length === 0;
     const hasSelections = Object.values(productSelections).filter(it => it).length !== 0;
     const hasGroupSelections = Object.values(groupSelections).filter(it => it).length !== 0;
-    const productsGrouped = ProductUtils.splitProductsByGroups(products);
+    const productsGrouped = ProductUtils.splitProductsByGroups(products, isTransferring);
 
     console.log(productsGrouped)
 
@@ -119,7 +127,7 @@ class ProductList extends Component {
           <NoProductsLabel>Товаров не найдено</NoProductsLabel>
           <FormButton color={ACCENT_COLOR} onClick={this.handleShow('addProductModal')}>Добавить товар</FormButton>
         </NoProductsBlock>}
-        {!noProducts &&
+        {!noProducts && !isTransferring &&
         <div>
           <FormButton
             onClick={this.handleShow('addProductModal')}
@@ -157,8 +165,10 @@ class ProductList extends Component {
               uid={group.groupId}
               checked={groupSelections[group.groupId]}
               onChecked={this.handleGroupChecked}
+              size={group.products.length}
+              isTransferring={isTransferring}
             />
-            {group.products.map(product =>
+            {!isTransferring && group.products.map(product =>
               <ProductCard
                 history={history}
                 key={product.uid}

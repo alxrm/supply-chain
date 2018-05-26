@@ -1,6 +1,6 @@
 import {combineReducers} from 'redux';
 import owner from './ownerReducers';
-import ownerProducts from './onwerProductsReducers';
+import ownerProducts from './productsListReducers';
 import auth from './authReducers';
 import product from './productReducers';
 

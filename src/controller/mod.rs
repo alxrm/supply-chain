@@ -5,6 +5,7 @@ pub use self::history::ListProofTemplate;
 pub use self::owner_controller::OwnerController;
 pub use self::product_controller::ProductController;
 pub use self::products_by_owner_controller::ProductsByOwnerController;
+pub use self::products_transferring_controller::ProductsTransferringController;
 pub use self::transaction_controller::TransactionController;
 
 mod base_controller;
@@ -13,4 +14,5 @@ mod transaction_controller;
 mod group_controller;
 mod owner_controller;
 mod products_by_owner_controller;
+mod products_transferring_controller;
 mod history;

@@ -6,6 +6,7 @@ import QRCode from 'qrcode.react';
 
 const Container = styled.div`
   padding: 6px 20px 20px;
+  font-size: 18px;
 
   box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .03),
     0 0 1px rgba(39, 44, 49, .09), 
@@ -37,9 +38,9 @@ class ScannerPage extends Component {
             type="text"
             id="secretKey"
             placeholder="Введите секретный ключ"
-            placeholdercolor="rgb(0, 0, 0, 0.8)"
-            textcolor="rgb(0, 0, 0, 1)"
-            bordercolor="rgb(0, 0, 0, 0.3)"
+            placeholdercolor="rgba(2,119,189, 0.8)"
+            textcolor="rgba(2,119,189, 1)"
+            bordercolor="rgba(2,119,189, 0.3)"
             onChange={this.handleChange}
             value={secretKey}
           />
@@ -53,7 +54,8 @@ class ScannerPage extends Component {
             renderAs='svg'
           />
           <div style={{ textAlign: 'center' }}>
-            Чтобы подключить сканер отсканируйте этот QR код с помощью приложения <b>СЧ Сканер</b>
+            Чтобы подключить сканер отсканируйте <br/>
+            этот QR код с помощью приложения <b>СЧ Сканер</b>
           </div>
         </div>}
       </Container>
