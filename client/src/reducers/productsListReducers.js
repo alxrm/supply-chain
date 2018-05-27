@@ -2,7 +2,7 @@ import {handleActions} from 'redux-actions';
 
 const PRODUCT_LIST_INITIAL_STATE = {
   error: false,
-  products: {}
+  products: {},
 };
 
 export const ownerProducts = handleActions({

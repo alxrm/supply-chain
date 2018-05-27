@@ -25,6 +25,7 @@ const GroupCard = withRouter(styled.div`
   ${props => props.isTransferring && css`
     background-color: white;
     cursor: auto;
+    margin: 0;
     
     h4 {
       color: rgba(11, 31, 53, 1);
@@ -92,7 +93,7 @@ export default ({ uid, isTransferring, size, checked, onChecked }) => {
 
   return (
     <GroupCard
-      onClick={() => !noGroup && onChecked(uid, !checked)}
+      onClick={() => !noGroup && !isTransferring && onChecked(uid, !checked)}
       noGroup={noGroup}
       isTransferring={isTransferring}
     >

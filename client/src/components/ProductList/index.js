@@ -185,6 +185,6 @@ class ProductList extends Component {
 
 export default connectWithDispatch(state => ({
   publicKey: state.auth.user.publicKey,
-  products: state.ownerProducts.products,
-  error: state.ownerProducts.error,
+  products: state.productsList.products,
+  error: state.productsList.error,
 }))(ProductList);
