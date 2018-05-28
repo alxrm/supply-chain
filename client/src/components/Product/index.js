@@ -72,6 +72,10 @@ class ProductPage extends Component {
   }
 
   renderTransactions(transactions) {
+    if (!transactions) {
+      return <span/>;
+    }
+
     return transactions.map(it => (
       <div key={it.tx_hash}>
         <TransactionInfo>
