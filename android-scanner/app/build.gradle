@@ -1,0 +1,52 @@
+apply plugin: 'com.android.application'
+apply from: "${rootDir}/constants.gradle"
+
+android {
+  compileSdkVersion 27
+  defaultConfig {
+    applicationId "rm.com.sc_scanner"
+    minSdkVersion 17
+    targetSdkVersion 27
+    versionCode 1
+    versionName "1.0"
+  }
+  buildTypes {
+    release {
+      minifyEnabled false
+      proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+    }
+  }
+  dexOptions {
+    javaMaxHeapSize "2g"
+  }
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_1_8
+    targetCompatibility JavaVersion.VERSION_1_8
+  }
+}
+
+dependencies {
+  implementation fileTree(dir: 'libs', include: ['*.jar'])
+  annotationProcessor square.butterknifeCompiler
+  annotationProcessor square.daggerCompiler
+
+  implementation square.dagger
+  implementation square.butterknife
+  implementation square.retrofit
+  implementation square.retrofitGson
+  implementation square.retrofitRxJava2
+  implementation square.okhttpLogging
+
+  implementation supportDeps.design
+  implementation supportDeps.appCompat
+
+  implementation glide.lib
+  implementation glide.okhttpIntegration
+
+  implementation streamSupport.lib
+  implementation rxjava.lib
+  implementation rxjava.android
+
+  implementation "com.google.zxing:core:3.3.2"
+  implementation "com.journeyapps:zxing-android-embedded:3.6.0@aar"
+}

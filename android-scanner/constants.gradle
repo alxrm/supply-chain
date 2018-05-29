@@ -1,0 +1,100 @@
+ext {
+  minSdk = 16
+  targetSdk = 26
+  buildTools = "27.0.3"
+  publishVersion = "1.0"
+
+  versions = [androidBuild : "2.2.3",
+              anko         : "0.9",
+              fabric       : "1.22.1",
+              kotlin       : "1.0.5-2",
+              leakCanary   : "1.4-beta2",
+              crashlytics  : "2.6.7",
+              answers      : "1.3.12",
+              butterknife  : "8.8.1",
+              okhttp       : "3.10.0",
+              glide        : "4.0.0",
+              okio         : "1.11.0",
+              playServices : "9.8.0",
+              retrofit     : "2.4.0",
+              stetho       : "1.4.1",
+              support      : "27.0.2",
+              vksdk        : "1.6.7",
+              timber       : "4.3.1",
+              realm        : "2.2.1",
+              androidJobs  : "1.1.4",
+              bolts        : "1.4.0",
+              dagger       : "2.15",
+              redex        : "1.1.0",
+              datePicker   : "3.1.1",
+              dbflow       : "4.0.0-beta5",
+              streamSupport: "1.6.2",
+              rxjava       : "2.1.12",
+              rxandroid    : "2.0.2",
+              autoParcel   : "0.2.6",
+              autoValue    : "1.5.3"]
+
+  kotlin = [plugin: "org.jetbrains.kotlin:kotlin-gradle-plugin:$versions.kotlin",
+            stdlib: "org.jetbrains.kotlin:kotlin-stdlib:$versions.kotlin"]
+
+  supportDeps = [v4            : "com.android.support:support-v4:$versions.support",
+                 v13           : "com.android.support:support-v13:$versions.support",
+                 design        : "com.android.support:design:$versions.support",
+                 recyclerView  : "com.android.support:recyclerview-v7:$versions.support",
+                 cardView      : "com.android.support:cardview-v7:$versions.support",
+                 appCompat     : "com.android.support:appcompat-v7:$versions.support",
+                 annotations   : "com.android.support:support-annotations:$versions.support",
+                 vectorDrawable: "com.android.support:support-vector-drawable:$versions.support",
+                 gridLayout    : "com.android.support:gridlayout-v7:$versions.support"]
+
+  anko = [v4          : "org.jetbrains.anko:anko-support-v4:$versions.anko",
+          sdk15       : "org.jetbrains.anko:anko-sdk15:$versions.anko",
+          design      : "org.jetbrains.anko:anko-design:$versions.anko",
+          recyclerView: "org.jetbrains.anko:anko-recyclerview-v7:$versions.anko",
+          appCompat   : "org.jetbrains.anko:anko-appcompat-v7:$versions.anko",
+          gridLayout  : "org.jetbrains.anko:anko-gridlayout-v7:$versions.anko"]
+
+  square = [timber             : "com.jakewharton.timber:timber:$versions.timber",
+            retrofit           : "com.squareup.retrofit2:retrofit:$versions.retrofit",
+            retrofitRxJava     : "com.squareup.retrofit2:adapter-rxjava:$versions.retrofit",
+            retrofitRxJava2    : "com.squareup.retrofit2:adapter-rxjava2:$versions.retrofit",
+            retrofitGson       : "com.squareup.retrofit2:converter-gson:$versions.retrofit",
+            okhttpLogging      : "com.squareup.okhttp3:logging-interceptor:$versions.okhttp",
+            dagger             : "com.google.dagger:dagger:$versions.dagger",
+            daggerCompiler     : "com.google.dagger:dagger-compiler:$versions.dagger",
+            daggerAndroid      : "com.google.dagger:dagger-android-support:$versions.dagger",
+            okio               : "com.squareup.okio:okio:$versions.okio",
+            butterknife        : "com.jakewharton:butterknife:$versions.butterknife",
+            butterknifeCompiler: "com.jakewharton:butterknife-compiler:$versions.butterknife"]
+
+  facebook = [stetho      : "com.facebook.stetho:stetho:$versions.stetho",
+              stethoRhino : "com.facebook.stetho:stetho-js-rhino:$versions.stetho",
+              stethoOkhttp: "com.facebook.stetho:stetho-okhttp:$versions.stetho",
+              redex       : "au.com.timmutton:redex:$versions.redex"]
+
+  playServices = [gcm     : "com.google.android.gms:play-services-gcm:$versions.playServices",
+                  maps    : "com.google.android.gms:play-services-maps:$versions.playServices",
+                  location: "com.google.android.gms:play-services-location:$versions.playServices"]
+
+  dbflow = [processor: "com.github.Raizlabs.DBFlow:dbflow-processor:$versions.dbflow",
+            core     : "com.github.Raizlabs.DBFlow:dbflow-core:$versions.dbflow",
+            lib      : "com.github.Raizlabs.DBFlow:dbflow:$versions.dbflow"]
+
+  glide = [lib              : "com.github.bumptech.glide:glide:$versions.glide",
+           compiler         : "com.github.bumptech.glide:compiler:$versions.glide",
+           okhttpIntegration: "com.github.bumptech.glide:okhttp3-integration:$versions.glide"]
+
+  rxjava = [lib    : "io.reactivex.rxjava2:rxjava:$versions.rxjava",
+            android: "io.reactivex.rxjava2:rxandroid:$versions.rxandroid"]
+
+  autoValue = [compiler   : "com.google.auto.value:auto-value:$versions.autoValue",
+               autoParcel : "com.ryanharter.auto.value:auto-value-parcel:$versions.autoParcel",
+               typeAdapter: "com.ryanharter.auto.value:auto-value-parcel-adapter:$versions.autoParcel"]
+
+
+  streamSupport = [lib    : "net.sourceforge.streamsupport:streamsupport:$versions.streamSupport",
+                   cfuture: "net.sourceforge.streamsupport:streamsupport-cfuture:$versions.streamSupport",
+                   atomic : "net.sourceforge.streamsupport:streamsupport-atomic:$versions.streamSupport",
+                   flow   : "net.sourceforge.streamsupport:streamsupport-flow:$versions.streamSupport",
+                   litral : "net.sourceforge.streamsupport:streamsupport-literal:$versions.streamSupport"]
+}
