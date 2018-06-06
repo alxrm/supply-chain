@@ -8,8 +8,8 @@ export const TX_SEND_GROUP = 131;
 export const TX_RECEIVE_GROUP = 132;
 
 export const TX_NAMES = {
-  [TX_CREATE_OWNER_ID]: 'Зарегистрирован держатель',
-  [TX_ADD_PRODUCT_ID]: 'Товар произведён',
+  [TX_CREATE_OWNER_ID]: 'Компания зарегистрирована в системе',
+  [TX_ADD_PRODUCT_ID]: 'Товар добавлен в систему',
   [TX_ATTACH_TO_GROUP_ID]: 'Товар добавлен в партию',
   [TX_SEND_GROUP]: 'Партия товаров покинула склад',
   [TX_RECEIVE_GROUP]: 'Партия товаров получена'

@@ -42,7 +42,7 @@ const Header = ({ logout }) => (
     <Navbar.Collapse>
       <Nav>
         <LinkContainer to="/owner">
-          <NavItemStyled>Держатель</NavItemStyled>
+          <NavItemStyled>Компания</NavItemStyled>
         </LinkContainer>
         <LinkContainer to="/products">
           <NavItemStyled>Товары</NavItemStyled>
