@@ -21,7 +21,7 @@ const Login = ({ login, logout, changeFormField, error, publicKey, secretKey }) 
     <AuthForm>
       <FormTitle>Вход</FormTitle>
       <Fade in={error}>
-        <FormCaption error>Invalid key pair provided</FormCaption>
+        <FormCaption error>Неверная пара ключей</FormCaption>
       </Fade>
       <BoldInput
         type="text"
@@ -41,6 +41,7 @@ const Login = ({ login, logout, changeFormField, error, publicKey, secretKey }) 
         <FormButton
           onClick={() => login(publicKey, secretKey)}
           color={ACCENT_COLOR}
+          borderColor="#eee"
           fontSize="18px"
         >
           Войти
@@ -49,6 +50,7 @@ const Login = ({ login, logout, changeFormField, error, publicKey, secretKey }) 
           <FormButton
             onClick={logout}
             color={ACCENT_COLOR}
+            borderColor="#eee"
             fontSize="18px"
           >
             Регистрация

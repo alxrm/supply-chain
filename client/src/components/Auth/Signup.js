@@ -19,6 +19,7 @@ const renderNoKeysButtons = (signup, name) => (
     <FormButton
       onClick={() => signup(name)}
       color={ACCENT_COLOR}
+      borderColor="#eee"
       fontSize="18px"
     >
       Создать ключи
@@ -26,6 +27,7 @@ const renderNoKeysButtons = (signup, name) => (
     <LinkContainer to="/login">
       <FormButton
         color={ACCENT_COLOR}
+        borderColor="#eee"
         fontSize="18px"
       >
         Вернуться к логину
@@ -39,6 +41,7 @@ const renderKeysReadyButtons = (login, publicKey, secretKey) => (
     <FormButton
       onClick={() => login(publicKey, secretKey)}
       color={ACCENT_COLOR}
+      borderColor="#eee"
       fontSize="18px"
     >
       Войти
@@ -71,14 +74,14 @@ const renderKeysFields = (isKeyPairCreated, publicKey, secretKey) => {
 
 const renderErrorMessage = (name) => {
   if (!name) {
-    return <span>Name is required</span>
+    return <span>Название компании обязательно</span>
   }
 
-  return <span>Server error occurred</span>
+  return <span>На сервере возникла ошибка, попробуйте позже</span>
 };
 
 const renderSuccessMessage = () => (
-  <span>Please keep these keys safe</span>
+  <span>Пожалуйста храните эти ключи в сохранности</span>
 );
 
 const Signup = ({ login, signup, error, name, publicKey, secretKey, changeFormField, isKeyPairCreated }) => (
@@ -95,7 +98,7 @@ const Signup = ({ login, signup, error, name, publicKey, secretKey, changeFormFi
         type="text"
         id="name"
         value={name}
-        placeholder="Имя"
+        placeholder="Название компании"
         onChange={changeFormField}
         autoFocus
       />
