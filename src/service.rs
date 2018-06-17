@@ -6,10 +6,7 @@ use exonum::helpers::fabric::{Context, ServiceFactory};
 use exonum::messages::{FromRaw, RawTransaction};
 use exonum::storage::Snapshot;
 use iron::Handler;
-use mount::Mount;
 use router::Router;
-use staticfile::Static;
-use std::path::Path;
 use super::api::SupplyChainApi;
 use super::schema::SupplyChainSchema;
 use super::transactions::BaseTransaction;
@@ -45,7 +42,6 @@ impl Service for SupplyChainService {
 
     fn public_api_handler(&self, ctx: &ApiContext) -> Option<Box<Handler>> {
         let mut router = Router::new();
-        let mut mount = Mount::new();
 
         let api = SupplyChainApi {
             channel: ctx.node_channel().clone(),
@@ -53,10 +49,7 @@ impl Service for SupplyChainService {
         };
         api.wire(&mut router);
 
-        mount.mount(&"/client", Static::new(Path::new("client/build")));
-        mount.mount(&"/", router);
-
-        Some(Box::new(mount))
+        Some(Box::new(router))
     }
 }
 

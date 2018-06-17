@@ -13,6 +13,7 @@ const FormButton = styled.a`
   font-weight: ${props => props.fontWeight || '300'};
   cursor: pointer;
   text-align: center;
+  text-decoration: none !important;
   transition: all .08s ease-in-out;
   
   &:hover {

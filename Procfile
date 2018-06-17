@@ -1,1 +1,0 @@
-web: ./target/release/supply-chain run -c config/full_config.toml -d db
