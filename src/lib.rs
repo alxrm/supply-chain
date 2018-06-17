@@ -12,6 +12,8 @@ extern crate router;
 extern crate iron;
 extern crate hyper;
 extern crate bodyparser;
+extern crate staticfile;
+extern crate mount;
 
 pub mod owner;
 pub mod product;

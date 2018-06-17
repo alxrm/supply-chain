@@ -1,17 +1,18 @@
-use iron::Handler;
-use router::Router;
-
-use exonum::messages::{RawTransaction, FromRaw};
-use exonum::blockchain::{Service, Transaction, ApiContext};
-use exonum::encoding::Error as StreamStructError;
-use exonum::helpers::fabric::{ServiceFactory, Context};
-use exonum::storage::Snapshot;
-use exonum::crypto::Hash;
 use exonum::api::Api;
-
-use super::transactions::BaseTransaction;
+use exonum::blockchain::{ApiContext, Service, Transaction};
+use exonum::crypto::Hash;
+use exonum::encoding::Error as StreamStructError;
+use exonum::helpers::fabric::{Context, ServiceFactory};
+use exonum::messages::{FromRaw, RawTransaction};
+use exonum::storage::Snapshot;
+use iron::Handler;
+use mount::Mount;
+use router::Router;
+use staticfile::Static;
+use std::path::Path;
 use super::api::SupplyChainApi;
 use super::schema::SupplyChainSchema;
+use super::transactions::BaseTransaction;
 
 pub const SUPPLY_CHAIN_SERVICE_ID: u16 = 1337;
 
@@ -44,13 +45,18 @@ impl Service for SupplyChainService {
 
     fn public_api_handler(&self, ctx: &ApiContext) -> Option<Box<Handler>> {
         let mut router = Router::new();
+        let mut mount = Mount::new();
+
         let api = SupplyChainApi {
             channel: ctx.node_channel().clone(),
             blockchain: ctx.blockchain().clone(),
         };
         api.wire(&mut router);
 
-        Some(Box::new(router))
+        mount.mount(&"/client", Static::new(Path::new("client/build")));
+        mount.mount(&"/", router);
+
+        Some(Box::new(mount))
     }
 }
 
