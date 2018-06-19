@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    >
+
+  <LinearLayout
+      android:id="@+id/tx_body"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_centerVertical="true"
+      android:orientation="vertical"
+      android:paddingBottom="8dp"
+      android:paddingLeft="16dp"
+      android:paddingRight="16dp"
+      android:paddingTop="8dp"
+      >
+
+    <TextView
+        android:id="@+id/tx_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Tx name"
+        android:textColor="@android:color/black"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        />
+
+    <TextView
+        android:id="@+id/tx_hash"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Tx hash"
+        android:textColor="@android:color/black"
+        android:textSize="14sp"
+        />
+
+    <TextView
+        android:id="@+id/tx_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Подтверждена"
+        android:textColor="#080"
+        android:textSize="14sp"
+        />
+
+  </LinearLayout>
+
+  <View
+      android:layout_below="@id/tx_body"
+      android:layout_width="match_parent"
+      android:layout_height="1dp"
+      android:background="#40000000"
+      />
+
+</RelativeLayout>

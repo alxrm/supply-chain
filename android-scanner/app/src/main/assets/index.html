@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Plugin</title>
+</head>
+<body>
+<script src="scripts/exonum-client.min.js"></script>
+<script src="scripts/axios.min.js"></script>
+<script>
+    const TX_CREATE_OWNER_ID = 128;
+    const TX_ADD_PRODUCT_ID = 129;
+    const TX_ATTACH_TO_GROUP_ID = 130;
+    const TX_SEND_GROUP = 131
+    const TX_RECEIVE_GROUP = 132;
+
+    const TX_NAMES = {
+      [TX_CREATE_OWNER_ID]: 'Компания зарегистрирована в системе',
+      [TX_ADD_PRODUCT_ID]: 'Товар добавлен в систему',
+      [TX_ATTACH_TO_GROUP_ID]: 'Товар добавлен в партию',
+      [TX_SEND_GROUP]: 'Партия товаров покинула склад',
+      [TX_RECEIVE_GROUP]: 'Партия товаров получена'
+    };
+
+    const TransactionMetaData = Exonum.newType({
+      fields: {
+        tx_hash: { type: Exonum.Hash, size: 32, from: 0, to: 32 },
+        execution_status: { type: Exonum.Bool, size: 1, from: 32, to: 33 }
+      }
+    });
+
+    const instance = axios.create({
+      baseURL: 'http://167.99.198.61:8010/api/services/supply-chain/v1',
+      timeout: 1000,
+    });
+
+    function unpackHistoryProof({ history_hash, history_len }, { proof }) {
+      if (!history_hash) {
+        return {};
+      }
+
+      return Exonum.merkleProof(
+        history_hash,
+        parseInt(history_len, 10),
+        proof,
+        [0, parseInt(history_len, 10)],
+        TransactionMetaData
+      );
+    }
+
+    function defineNames(transactions) {
+      return transactions.map(it => Object.assign({}, it, { name: TX_NAMES[it.message_id] }));
+    }
+
+    function fetchProduct(productId) {
+      instance.get(`products/${productId}`)
+        .then(function (response) {
+          const payload = response.productData;
+          const productData = payload.productData;
+          const historyMeta = unpackHistoryProof(productData, payload.history);
+          const history = defineNames(payload.history.values.map((it, i) => Object.assign({}, it, historyMeta[i])));
+
+          window.JSInterface.onResult(JSON.stringify({ productData, history }));
+        })
+        .catch(function (error) {
+          window.JSInterface.onResult(JSON.stringify(error));
+          console.log(error);
+        });
+    }
+</script>
+</body>
+</html>
